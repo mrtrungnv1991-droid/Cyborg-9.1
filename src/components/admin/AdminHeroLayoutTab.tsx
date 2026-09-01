@@ -28,7 +28,18 @@ import {
   Bot
 } from 'lucide-react';
 import { SystemConfig, HeroCustomConfig, LaunchpadButtonConfig, UiLayoutConfig, HeroTranslationData } from '../../types';
-import { getLocalizedHeroConfig, HERO_TRANSLATIONS_DICT, SUPPORTED_LOCALES, SupportedLocale } from '../../i18n';
+import { 
+  getLocalizedHeroConfig, 
+  HERO_TRANSLATIONS_DICT, 
+  SUPPORTED_LOCALES, 
+  SupportedLocale, 
+  translateHeroFromSource, 
+  translateHeroSentence,
+  synchronizeBannerTranslations,
+  computeHeroContentHash,
+  ALL_TARGET_LOCALES,
+  SOURCE_LANGUAGE
+} from '../../i18n';
 
 interface AdminHeroLayoutTabProps {
   systemConfig: SystemConfig;
@@ -42,7 +53,7 @@ export const DEFAULT_HERO_CONFIG: HeroCustomConfig = {
   mainHeadingLine1: 'MUA CHUNG KEY BẢN QUYỀN',
   mainHeadingLine2: 'TIẾT KIỆM ĐẾN 80%',
   mainHeadingGradient: 'cyan_blue',
-  subheading: 'Giải pháp gom đơn thông minh: Nhận giá sỉ gốc cho ChatGPT Plus, Netflix 4K, Game Steam và 121 tựa game hot. Thanh toán tự động, nhận mã tức thì qua hợp đồng bảo lãnh Escrow 100%.',
+  subheading: 'Giải pháp gom đơn thông minh: Nhận giá sỉ gốc cho ChatGPT Plus, Netflix 4K, Game Steam và nhiều tựa game hot. Thanh toán tự động, nhận mã tức thì qua hợp đồng bảo lãnh Escrow 100%.',
   containerMaxWidth: 'max-w-7xl',
   contentAlignment: 'balanced_split',
   verticalPadding: 'standard',
@@ -107,8 +118,45 @@ export const AdminHeroLayoutTab: React.FC<AdminHeroLayoutTabProps> = ({
   const previewConfig = getLocalizedHeroConfig(heroConfig, previewLang);
 
   const handleSave = () => {
+    const sourceData: HeroTranslationData = {
+      badgeText: heroConfig.badgeText,
+      mainHeadingLine1: heroConfig.mainHeadingLine1,
+      mainHeadingLine2: heroConfig.mainHeadingLine2,
+      subheading: heroConfig.subheading,
+      pod1Title: heroConfig.trustPod1?.title,
+      pod1Val: heroConfig.trustPod1?.value,
+      pod1Sub: heroConfig.trustPod1?.sub,
+      pod2Title: heroConfig.trustPod2?.title,
+      pod2Val: heroConfig.trustPod2?.value,
+      pod2Sub: heroConfig.trustPod2?.sub,
+    };
+
+    // Strict Pipeline: VI -> EN Master -> Other Enabled Languages
+    const currentHash = computeHeroContentHash(sourceData);
+    const isTextChanged = heroConfig.contentHash !== currentHash;
+    const newVersion = (heroConfig.version || 0) + (isTextChanged ? 1 : 0);
+
+    const syncResult = synchronizeBannerTranslations(
+      sourceData,
+      heroConfig.translations || {},
+      {
+        enabledLanguages: ALL_TARGET_LOCALES,
+        version: newVersion,
+        forceAll: false // Preserves manual overrides if any
+      }
+    );
+
+    const updatedHeroConfig: HeroCustomConfig = {
+      ...heroConfig,
+      sourceLanguage: 'vi',
+      version: syncResult.version,
+      contentHash: syncResult.contentHash,
+      translations: syncResult.translations
+    };
+
+    setHeroConfig(updatedHeroConfig);
     onUpdateSystemConfig({
-      heroConfig,
+      heroConfig: updatedHeroConfig,
       uiLayoutConfig: uiLayout
     });
     setSaveSuccess(true);
@@ -118,29 +166,37 @@ export const AdminHeroLayoutTab: React.FC<AdminHeroLayoutTabProps> = ({
   const handleAutoTranslateAll = () => {
     setIsAutoTranslating(true);
     setTimeout(() => {
-      const allTrans: Record<string, HeroTranslationData> = { ...(heroConfig.translations || {}) };
-      
-      const otherLangs: SupportedLocale[] = ['en', 'zh', 'ja', 'ko', 'ru', 'fr', 'de', 'es'];
-      otherLangs.forEach(lang => {
-        const defaultForLang = HERO_TRANSLATIONS_DICT[lang] || HERO_TRANSLATIONS_DICT['en'];
-        allTrans[lang] = {
-          badgeText: defaultForLang.badgeText,
-          mainHeadingLine1: defaultForLang.mainHeadingLine1,
-          mainHeadingLine2: defaultForLang.mainHeadingLine2,
-          subheading: defaultForLang.subheading,
-          pod1Title: defaultForLang.pod1Title,
-          pod1Val: defaultForLang.pod1Val,
-          pod1Sub: defaultForLang.pod1Sub,
-          pod2Title: defaultForLang.pod2Title,
-          pod2Val: defaultForLang.pod2Val,
-          pod2Sub: defaultForLang.pod2Sub,
-          ...(allTrans[lang] || {})
-        };
-      });
+      const sourceData: HeroTranslationData = {
+        badgeText: heroConfig.badgeText,
+        mainHeadingLine1: heroConfig.mainHeadingLine1,
+        mainHeadingLine2: heroConfig.mainHeadingLine2,
+        subheading: heroConfig.subheading,
+        pod1Title: heroConfig.trustPod1?.title,
+        pod1Val: heroConfig.trustPod1?.value,
+        pod1Sub: heroConfig.trustPod1?.sub,
+        pod2Title: heroConfig.trustPod2?.title,
+        pod2Val: heroConfig.trustPod2?.value,
+        pod2Sub: heroConfig.trustPod2?.sub,
+      };
+
+      // Force translate everything via VI -> EN Master -> All Languages
+      const newVersion = (heroConfig.version || 0) + 1;
+      const syncResult = synchronizeBannerTranslations(
+        sourceData,
+        {},
+        {
+          enabledLanguages: ALL_TARGET_LOCALES,
+          forceAll: true,
+          version: newVersion
+        }
+      );
 
       setHeroConfig(prev => ({
         ...prev,
-        translations: allTrans
+        sourceLanguage: 'vi',
+        version: syncResult.version,
+        contentHash: syncResult.contentHash,
+        translations: syncResult.translations
       }));
       setIsAutoTranslating(false);
       setSaveSuccess(true);
@@ -150,20 +206,64 @@ export const AdminHeroLayoutTab: React.FC<AdminHeroLayoutTabProps> = ({
 
   const updateLocalizedHeroField = (field: keyof HeroTranslationData, value: string) => {
     if (editingLang === 'vi') {
-      if (field === 'badgeText' || field === 'mainHeadingLine1' || field === 'mainHeadingLine2' || field === 'subheading') {
-        updateHeroField(field, value);
-      } else if (field === 'pod1Title' || field === 'pod1Val' || field === 'pod1Sub') {
-        const podKey = field === 'pod1Title' ? 'title' : field === 'pod1Val' ? 'value' : 'sub';
-        updateTrustPod1(podKey, value);
-      } else if (field === 'pod2Title' || field === 'pod2Val' || field === 'pod2Sub') {
-        const podKey = field === 'pod2Title' ? 'title' : field === 'pod2Val' ? 'value' : 'sub';
-        updateTrustPod2(podKey, value);
-      }
+      setHeroConfig(prev => {
+        const nextTranslations: Record<string, HeroTranslationData> = { ...(prev.translations || {}) };
+        
+        // Step 1: Translate VI field to EN Master
+        const enVal = translateHeroSentence(value, 'en');
+        nextTranslations.en = {
+          ...(nextTranslations.en || {}),
+          [field]: enVal,
+          status: 'auto'
+        };
+
+        // Step 2: Translate from EN Master to all other target languages
+        ALL_TARGET_LOCALES.forEach(lang => {
+          if (lang === 'vi' || lang === 'en') return;
+          const isManual = (nextTranslations[lang] as any)?.status === 'manual';
+          if (!isManual) {
+            const targetVal = translateHeroSentence(value, lang);
+            nextTranslations[lang] = {
+              ...(nextTranslations[lang] || {}),
+              [field]: targetVal,
+              status: 'auto'
+            };
+          }
+        });
+
+        if (field === 'badgeText' || field === 'mainHeadingLine1' || field === 'mainHeadingLine2' || field === 'subheading') {
+          return {
+            ...prev,
+            [field]: value,
+            translations: nextTranslations
+          };
+        } else if (field === 'pod1Title' || field === 'pod1Val' || field === 'pod1Sub') {
+          const podKey = field === 'pod1Title' ? 'title' : field === 'pod1Val' ? 'value' : 'sub';
+          return {
+            ...prev,
+            trustPod1: { ...prev.trustPod1, [podKey]: value },
+            translations: nextTranslations
+          };
+        } else if (field === 'pod2Title' || field === 'pod2Val' || field === 'pod2Sub') {
+          const podKey = field === 'pod2Title' ? 'title' : field === 'pod2Val' ? 'value' : 'sub';
+          return {
+            ...prev,
+            trustPod2: { ...prev.trustPod2, [podKey]: value },
+            translations: nextTranslations
+          };
+        }
+        return {
+          ...prev,
+          translations: nextTranslations
+        };
+      });
     } else {
       setHeroConfig(prev => {
         const trans = { ...(prev.translations || {}) };
         const currentLangTrans = { ...(trans[editingLang] || {}) };
         currentLangTrans[field] = value;
+        (currentLangTrans as any).status = 'manual'; // Marked manual override
+        (currentLangTrans as any).updatedAt = new Date().toISOString();
         trans[editingLang] = currentLangTrans;
         return {
           ...prev,
@@ -190,8 +290,22 @@ export const AdminHeroLayoutTab: React.FC<AdminHeroLayoutTabProps> = ({
 
     const custom = heroConfig.translations?.[editingLang]?.[field];
     if (custom !== undefined) return custom;
-    const defaultDict = HERO_TRANSLATIONS_DICT[editingLang] || HERO_TRANSLATIONS_DICT['en'];
-    return defaultDict[field] || '';
+
+    // Dynamically translate from active Vietnamese text in real-time
+    const sourceData: HeroTranslationData = {
+      badgeText: heroConfig.badgeText,
+      mainHeadingLine1: heroConfig.mainHeadingLine1,
+      mainHeadingLine2: heroConfig.mainHeadingLine2,
+      subheading: heroConfig.subheading,
+      pod1Title: heroConfig.trustPod1?.title,
+      pod1Val: heroConfig.trustPod1?.value,
+      pod1Sub: heroConfig.trustPod1?.sub,
+      pod2Title: heroConfig.trustPod2?.title,
+      pod2Val: heroConfig.trustPod2?.value,
+      pod2Sub: heroConfig.trustPod2?.sub,
+    };
+    const dynamicTrans = translateHeroFromSource(sourceData, editingLang);
+    return dynamicTrans[field] || '';
   };
 
   const handleResetToDefault = () => {
@@ -659,7 +773,22 @@ export const AdminHeroLayoutTab: React.FC<AdminHeroLayoutTabProps> = ({
             })}
           </div>
 
-          {editingLang !== 'vi' && (
+          {editingLang === 'vi' ? (
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-2.5 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-xs font-mono text-emerald-300 gap-2">
+              <div className="flex items-center gap-2">
+                <span className="flex h-2 w-2 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span>
+                  <strong>Cơ Chế Auto Dịch Pivot Đang Bật:</strong> Gõ Tiếng Việt ➔ Tự động dịch sang Tiếng Anh chuẩn (Master Bridge) ➔ Dịch ra 7 ngôn ngữ (ZH, JA, KO, RU, FR, DE, ES) với độ chính xác cao nhất.
+                </span>
+              </div>
+              <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-900/60 border border-emerald-600/40 text-emerald-200 font-bold shrink-0 self-start sm:self-auto">
+                TỰ ĐỘNG VĨNH VIỄN
+              </span>
+            </div>
+          ) : (
             <div className="flex items-center justify-between p-2.5 rounded-lg bg-cyan-950/40 border border-cyan-500/20 text-xs font-mono text-cyan-300">
               <span>Đang chỉnh sửa bản dịch cho: <strong>{SUPPORTED_LOCALES.find(l => l.code === editingLang)?.name} ({editingLang.toUpperCase()})</strong></span>
               <button

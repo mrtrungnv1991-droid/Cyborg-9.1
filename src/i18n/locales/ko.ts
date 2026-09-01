@@ -135,7 +135,7 @@ export const ko = {
     "badge": "타임특가",
     "title_1": "소프트웨어 & 게임 공동구매",
     "title_save": "최대 80% 할인",
-    "desc": "스마트 디지털 공구: ChatGPT Plus, Netflix 4K, Steam 게임 및 121개 인기 게임 도매가 제공. 100% 에스크로 안심 보증과 결제 즉시 자동 발송 시스템.",
+    "desc": "스마트 디지털 공구: ChatGPT Plus, Netflix 4K, Steam 게임 및 다양한 인기 게임 도매가 제공. 100% 에스크로 안심 보증과 결제 즉시 자동 발송 시스템.",
     "speed_label": "발송 속도",
     "speed_val": "3 - 30 초",
     "speed_sub": "24/7 전천후 자동 전송",

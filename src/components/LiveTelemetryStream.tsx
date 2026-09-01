@@ -48,17 +48,17 @@ export const LiveTelemetryStream: React.FC = () => {
   if (!currentToast) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-40 max-w-sm w-full p-3 rounded-lg bg-[#0e1320]/95 border border-cyan-500/40 shadow-[0_0_20px_rgba(6,182,212,0.25)] backdrop-blur-md transition-all duration-300 animate-in fade-in slide-in-from-bottom-5">
-      <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded bg-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0 border border-cyan-500/30">
-          <Zap className="w-4 h-4" />
+    <div className="fixed bottom-16 sm:bottom-4 left-3 max-w-[calc(100vw-110px)] sm:max-w-sm z-30 pointer-events-none p-2.5 sm:p-3 rounded-xl bg-[#0e1320]/95 border border-cyan-500/40 shadow-[0_0_20px_rgba(6,182,212,0.25)] backdrop-blur-md transition-all duration-300 animate-in fade-in slide-in-from-bottom-5">
+      <div className="flex items-center gap-2.5 sm:gap-3">
+        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded bg-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0 border border-cyan-500/30">
+          <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </div>
         <div className="flex-1 min-w-0 text-xs font-mono">
-          <div className="text-white truncate">
+          <div className="text-white truncate text-[11px] sm:text-xs">
             <span className="font-bold text-cyan-300">{currentToast.user}</span>{' '}
             <span className="text-slate-300">{currentToast.action}</span>
           </div>
-          <div className="text-slate-400 truncate text-[11px] mt-0.5">
+          <div className="text-slate-400 truncate text-[10px] sm:text-[11px] mt-0.5">
             {currentToast.product} • <span className="text-emerald-400 font-bold">{currentToast.slots}</span>
           </div>
         </div>

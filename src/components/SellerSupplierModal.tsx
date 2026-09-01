@@ -19,6 +19,7 @@ import {
 import { SupplierApiConfig, UserProfile } from '../types';
 import { formatCurrency } from '../utils/formatters';
 import { useTranslation } from '../i18n';
+import { useUI } from '../contexts/UIContext';
 
 interface SellerSupplierModalProps {
   suppliers: SupplierApiConfig[];
@@ -36,6 +37,7 @@ export const SellerSupplierModal: React.FC<SellerSupplierModalProps> = ({
   onSyncProvider
 }) => {
   const { t } = useTranslation();
+  const { showToast } = useUI();
   if (!isOpen) return null;
 
   const [activeTab, setActiveTab] = useState<'suppliers' | 'batch_keys' | 'payouts'>('suppliers');
@@ -48,6 +50,9 @@ export const SellerSupplierModal: React.FC<SellerSupplierModalProps> = ({
     setTimeout(() => {
       onSyncProvider(id);
       setSyncingId(null);
+      showToast('Đồng bộ dữ liệu nhà cung cấp thành công!', 'success', {
+        title: '⚡ ĐỒNG BỘ THÀNH CÔNG'
+      });
     }, 1200);
   };
 
@@ -269,7 +274,7 @@ export const SellerSupplierModal: React.FC<SellerSupplierModalProps> = ({
                 </div>
 
                 <button
-                  onClick={() => alert('Payout request sent to Financial Department.')}
+                  onClick={() => showToast('Yêu cầu rút doanh thu đã được gửi tới Ban Tài chính!', 'success', { title: '✓ YÊU CẦU RÚT TIỀN' })}
                   className="py-3 px-6 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-mono font-bold text-xs uppercase tracking-wider transition-all cursor-pointer"
                 >
                   Request Payout Now

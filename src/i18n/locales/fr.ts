@@ -135,7 +135,7 @@ export const fr = {
     "badge": "VENTE FLASH",
     "title_1": "Achats groupés de logiciels & jeux",
     "title_save": "Économisez jusqu’à 80%",
-    "desc": "La solution intelligente : ChatGPT Plus, Netflix 4K, jeux Steam et 121 jeux vidéo au tarif de gros. 100% garanti par Escrow avec livraison automatique en quelques secondes.",
+    "desc": "La solution intelligente : ChatGPT Plus, Netflix 4K, jeux Steam et de nombreux jeux vidéo au tarif de gros. 100% garanti par Escrow avec livraison automatique en quelques secondes.",
     "speed_label": "Vitesse de livraison",
     "speed_val": "3 - 30 sec",
     "speed_sub": "Livraison automatisée 24/7",

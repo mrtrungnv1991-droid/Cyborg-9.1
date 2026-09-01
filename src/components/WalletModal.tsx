@@ -21,6 +21,7 @@ import {
 import { UserProfile, CTVWithdrawal } from '../types';
 import { formatCurrency, generateTxHash } from '../utils/formatters';
 import { useTranslation } from '../i18n';
+import { useUI } from '../contexts/UIContext';
 
 interface WalletModalProps {
   user: UserProfile;
@@ -47,6 +48,7 @@ export const WalletModal: React.FC<WalletModalProps> = ({
   withdrawals = []
 }) => {
   const { t } = useTranslation();
+  const { showToast } = useUI();
   const [activeTab, setActiveTab] = useState<'deposit' | 'withdraw' | 'history'>('deposit');
   const [selectedMethod, setSelectedMethod] = useState<'vietqr' | 'momo' | 'usdt' | 'ltc' | 'binance'>('vietqr');
   const [depositAmount, setDepositAmount] = useState<number>(200000);
@@ -70,6 +72,9 @@ export const WalletModal: React.FC<WalletModalProps> = ({
     setTimeout(() => {
       onDeposit(depositAmount);
       setIsProcessing(false);
+      showToast(`Đã nạp thành công +${formatCurrency(depositAmount, user.currency)} vào ví Escrow!`, 'success', {
+        title: '⚡ NẠP TIỀN THÀNH CÔNG'
+      });
       setSuccessMsg(`✓ Successfully deposited +${formatCurrency(depositAmount, user.currency)} into Escrow Wallet!`);
       setTimeout(() => {
         setSuccessMsg('');
@@ -80,11 +85,15 @@ export const WalletModal: React.FC<WalletModalProps> = ({
   const handleConfirmWithdraw = (e: React.FormEvent) => {
     e.preventDefault();
     if (withdrawAmount <= 0 || withdrawAmount > user.walletBalance) {
-      alert('Withdrawal amount is invalid or exceeds available balance!');
+      showToast('Số tiền rút không hợp lệ hoặc vượt quá số dư khả dụng!', 'error', {
+        title: 'LỖI RÚT TIỀN'
+      });
       return;
     }
     if (!withdrawAccountNo.trim()) {
-      alert('Please enter receiving account / wallet address!');
+      showToast('Vui lòng nhập số tài khoản / địa chỉ ví nhận tiền!', 'warning', {
+        title: 'THIẾU THÔNG TIN'
+      });
       return;
     }
 
@@ -99,6 +108,9 @@ export const WalletModal: React.FC<WalletModalProps> = ({
       });
     }
 
+    showToast(`Đã gửi yêu cầu rút ${formatCurrency(withdrawAmount, user.currency)} về ${withdrawBank}! Đang chờ duyệt.`, 'success', {
+      title: '✓ GỬI YÊU CẦU THÀNH CÔNG'
+    });
     setSuccessMsg(`✓ Withdrawal request for ${formatCurrency(withdrawAmount, user.currency)} to ${withdrawBank} submitted for admin review!`);
     setTimeout(() => {
       setSuccessMsg('');

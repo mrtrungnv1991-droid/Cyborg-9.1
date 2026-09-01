@@ -790,6 +790,22 @@ export const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
                 </div>
               </div>
 
+              {/* Pivot Translation Pipeline Status Banner */}
+              <div className="p-2.5 rounded-lg bg-emerald-950/40 border border-emerald-500/30 flex items-center justify-between text-xs font-mono text-emerald-300">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-2 w-2 relative">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                  <span>
+                    <strong>Quy trình Pivot Tự Động:</strong> Post Tiếng Việt ➔ Tiếng Anh chuẩn (Master Bridge) ➔ 7 Ngôn ngữ đích
+                  </span>
+                </div>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-900/60 border border-emerald-600/40 text-emerald-200 font-bold hidden sm:inline-block">
+                  PERMANENT AUTO PIPELINE
+                </span>
+              </div>
+
               {/* Language Switcher Tabs */}
               <div className="space-y-2">
                 <div className="text-[11px] font-bold text-slate-300">

@@ -27,6 +27,7 @@ import {
 import { UserProfile, AffiliateTier, CTVWithdrawal } from '../types';
 import { formatCurrency } from '../utils/formatters';
 import { useTranslation } from '../i18n';
+import { useUI } from '../contexts/UIContext';
 
 interface AffiliateResellerModalProps {
   isOpen: boolean;
@@ -62,6 +63,7 @@ export const AffiliateResellerModal: React.FC<AffiliateResellerModalProps> = ({
   withdrawals = []
 }) => {
   const { t } = useTranslation();
+  const { showToast } = useUI();
   if (!isOpen) return null;
 
   const [activeTab, setActiveTab] = useState<'overview' | 'withdraw_form' | 'withdraw_history' | 'api' | 'tiers'>('overview');
@@ -85,21 +87,26 @@ export const AffiliateResellerModal: React.FC<AffiliateResellerModalProps> = ({
   const handleCopyLink = () => {
     navigator.clipboard.writeText(referralLink);
     setCopiedLink(true);
+    showToast('Đã copy link giới thiệu vào clipboard!', 'info', { duration: 2500 });
     setTimeout(() => setCopiedLink(false), 2000);
   };
 
   const handleCopyKey = () => {
     navigator.clipboard.writeText(apiKey);
     setCopiedApiKey(true);
+    showToast('Đã copy API Key bí mật!', 'info', { duration: 2500 });
     setTimeout(() => setCopiedApiKey(false), 2000);
   };
 
   const handleInstantWalletWithdraw = () => {
     if (currentCommission <= 0) {
-      alert(t('common.error'));
+      showToast('Không có hoa hồng khả dụng để rút!', 'warning');
       return;
     }
     onWithdrawCommission(currentCommission);
+    showToast(`Đã chuyển +${formatCurrency(currentCommission, currency)} hoa hồng vào ví chính thành công!`, 'success', {
+      title: '⚡ RÚT HOA HỒNG THÀNH CÔNG'
+    });
     setToastNotice(`✓ ${t('common.success')}: +${formatCurrency(currentCommission, currency)}`);
     setTimeout(() => setToastNotice(null), 3500);
   };
@@ -107,11 +114,11 @@ export const AffiliateResellerModal: React.FC<AffiliateResellerModalProps> = ({
   const handleBankWithdrawSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (withdrawAmount < 50000 || withdrawAmount > currentCommission) {
-      alert(t('common.error'));
+      showToast('Số tiền rút tối thiểu là 50,000đ và không vượt quá số dư hoa hồng!', 'error');
       return;
     }
     if (!accountNumber.trim()) {
-      alert(t('common.error'));
+      showToast('Vui lòng nhập số tài khoản ngân hàng nhận tiền!', 'warning');
       return;
     }
 
@@ -126,6 +133,9 @@ export const AffiliateResellerModal: React.FC<AffiliateResellerModalProps> = ({
       });
     }
 
+    showToast(`Đã gửi yêu cầu rút hoa hồng ${formatCurrency(withdrawAmount, currency)} về ${bankName}!`, 'success', {
+      title: '✓ GỬI YÊU CẦU RÚT HOA HỒNG'
+    });
     setActiveTab('withdraw_history');
     setToastNotice(`✓ ${t('common.success')}: ${formatCurrency(withdrawAmount, currency)} -> ${bankName}`);
     setTimeout(() => setToastNotice(null), 4000);

@@ -135,7 +135,7 @@ export const ja = {
     "badge": "特選セール",
     "title_1": "ソフトウェア＆ゲームの共同購入",
     "title_save": "最大 80% オフ",
-    "desc": "スマートな共同購入：ChatGPT Plus、Netflix 4K、Steamゲーム、121タイトルの人気ゲームが卸売価格。100% エスクロー保証＆即時自動配信。",
+    "desc": "スマートな共同購入：ChatGPT Plus、Netflix 4K、Steamゲーム、多数の人気ゲームが卸売価格。100% エスクロー保証＆即時自動配信。",
     "speed_label": "配信速度",
     "speed_val": "3〜30 秒",
     "speed_sub": "24/7 自動即時配信",

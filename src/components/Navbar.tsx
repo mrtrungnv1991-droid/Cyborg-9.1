@@ -138,16 +138,16 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* Main Bar */}
       <div className={`w-full ${containerMaxWidth || 'max-w-7xl'} mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-1 sm:gap-2`}>
         {/* Brand / Logo */}
-        <div className="flex items-center gap-1.5 sm:gap-3 cursor-pointer select-none shrink-0" onClick={onLogoClick}>
-          <div className="relative flex items-center justify-center w-7 h-7 sm:w-10 sm:h-10 bg-gradient-to-br from-cyan-500 to-blue-600 clip-chamfer shadow-[0_0_20px_rgba(6,182,212,0.4)]">
-            <Zap className="w-3.5 h-3.5 sm:w-6 sm:h-6 text-black font-black" />
+        <div className="flex items-center gap-1 sm:gap-3 cursor-pointer select-none shrink-0" onClick={onLogoClick}>
+          <div className="relative flex items-center justify-center w-7 h-7 sm:w-9 sm:h-9 bg-gradient-to-br from-cyan-500 to-blue-600 clip-chamfer shadow-[0_0_16px_rgba(6,182,212,0.4)]">
+            <Zap className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-black font-black" />
           </div>
-          <div>
+          <div className="min-w-0">
             <div className="flex items-center gap-1 sm:gap-2">
-              <span className="text-sm sm:text-xl font-black tracking-wider text-white font-mono">
+              <span className="text-xs sm:text-base md:text-xl font-black tracking-wider text-white font-mono">
                 CYBER<span className="text-cyan-400">POOL</span>
               </span>
-              <span className="hidden sm:inline-block text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-500/40">
+              <span className="hidden lg:inline-block text-[9px] font-mono uppercase px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-500/40">
                 TESLA ESCROW V4.2
               </span>
             </div>
@@ -158,38 +158,55 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* Right Actions (Optimized for Mobile & Desktop) */}
-        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+        <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 shrink-0">
           {/* AI Language & Currency Switcher with Quick Popover */}
           <div className="relative" ref={langMenuRef}>
             <button
               onClick={() => setIsQuickLangOpen(!isQuickLangOpen)}
-              className="flex items-center gap-1 px-1.5 sm:px-2 py-1 sm:py-1.5 text-[10px] sm:text-xs font-mono font-bold text-cyan-300 bg-slate-900/90 hover:bg-slate-800 border border-cyan-500/40 hover:border-cyan-400 rounded transition-all shadow-[0_0_10px_rgba(6,182,212,0.15)] active:scale-95 cursor-pointer"
+              className="flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 py-1 sm:py-1.5 text-[10px] sm:text-xs font-mono font-bold text-cyan-300 bg-slate-900/90 hover:bg-slate-800 border border-cyan-500/40 hover:border-cyan-400 rounded-lg transition-all shadow-[0_0_10px_rgba(6,182,212,0.15)] active:scale-95 cursor-pointer"
               title={t('nav.language_currency')}
             >
               <Globe className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-cyan-400" />
               <span className="text-xs">{activeLangObj.flag}</span>
-              <span className="hidden sm:inline font-bold">{user.currency}</span>
+              <span className="hidden md:inline font-bold">{user.currency}</span>
               <ChevronDown className={`w-2.5 h-2.5 text-slate-400 transition-transform ${isQuickLangOpen ? 'rotate-180 text-cyan-400' : ''}`} />
             </button>
 
             {/* Quick Language & Currency Dropdown */}
             {isQuickLangOpen && (
-              <div className="absolute right-0 top-full mt-2 w-72 p-2.5 bg-[#090d16]/98 backdrop-blur-xl border border-cyan-500/60 rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.95)] z-50 animate-in fade-in zoom-in-95 duration-150">
-                <div className="flex items-center justify-between pb-2 border-b border-slate-800 text-xs font-mono font-bold text-white">
-                  <span className="flex items-center gap-1.5 text-cyan-400">
-                    <Globe className="w-3.5 h-3.5" />
-                    <span>{t('nav.language_currency')}</span>
-                  </span>
-                  <button
-                    onClick={() => {
-                      setIsQuickLangOpen(false);
-                      onOpenLanguageModal();
-                    }}
-                    className="text-[10px] text-cyan-400 hover:text-cyan-300 underline cursor-pointer"
-                  >
-                    AI Hub ↗
-                  </button>
-                </div>
+              <>
+                {/* Click-outside touch backdrop for mobile */}
+                <div
+                  className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[1px] sm:hidden"
+                  onClick={() => setIsQuickLangOpen(false)}
+                  aria-hidden="true"
+                />
+
+                <div className="fixed left-2 right-2 top-14 sm:absolute sm:left-0 sm:right-auto sm:top-full sm:mt-2 w-[calc(100vw-16px)] max-w-[325px] sm:w-80 p-2.5 bg-[#090d16]/98 backdrop-blur-xl border border-cyan-500/60 rounded-xl shadow-[0_12px_45px_rgba(0,0,0,0.95)] z-50 animate-in fade-in zoom-in-95 duration-150 max-h-[80dvh] overflow-y-auto">
+                  <div className="flex items-center justify-between pb-2 border-b border-slate-800 text-xs font-mono font-bold text-white">
+                    <span className="flex items-center gap-1.5 text-cyan-400">
+                      <Globe className="w-3.5 h-3.5" />
+                      <span>{t('nav.language_currency')}</span>
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          setIsQuickLangOpen(false);
+                          onOpenLanguageModal();
+                        }}
+                        className="text-[10px] text-cyan-400 hover:text-cyan-300 underline cursor-pointer"
+                      >
+                        AI Hub ↗
+                      </button>
+                      <button
+                        onClick={() => setIsQuickLangOpen(false)}
+                        className="p-1 rounded text-slate-400 hover:text-white bg-slate-800/80 transition-colors sm:hidden cursor-pointer"
+                        title={t('common.close')}
+                      >
+                        <X className="w-3 h-3 text-slate-200" />
+                      </button>
+                    </div>
+                  </div>
 
                 {/* Language Grid */}
                 <div className="flex flex-col gap-1 pt-2 pb-2.5 border-b border-slate-800/80 max-h-56 overflow-y-auto pr-0.5">
@@ -281,47 +298,34 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </button>
                 </div>
               </div>
-            )}
+            </>
+          )}
           </div>
 
           {/* Fan Menu (All Devices Primary Action) */}
           <button
             onClick={onOpenFanMenu}
-            className="flex items-center gap-1 px-1.5 sm:px-2.5 py-1 sm:py-1.5 text-[10px] sm:text-xs font-bold font-mono text-black bg-gradient-to-r from-cyan-400 via-teal-300 to-blue-400 hover:from-cyan-300 hover:to-blue-300 rounded shadow-[0_0_12px_rgba(6,182,212,0.4)] active:scale-95 transition-all cursor-pointer"
+            className="flex items-center gap-1 px-1.5 sm:px-2.5 py-1 sm:py-1.5 text-[10px] sm:text-xs font-bold font-mono text-black bg-gradient-to-r from-cyan-400 via-teal-300 to-blue-400 hover:from-cyan-300 hover:to-blue-300 rounded-lg shadow-[0_0_12px_rgba(6,182,212,0.4)] active:scale-95 transition-all cursor-pointer shrink-0"
             title={t('nav.utilities')}
           >
             <Compass className="w-3 h-3 sm:w-3.5 sm:h-3.5 animate-spin" style={{ animationDuration: '10s' }} />
-            <span className="font-black tracking-tight">{t('nav.utilities')}</span>
+            <span className="font-black tracking-tight hidden sm:inline">{t('nav.utilities')}</span>
+            <span className="font-black tracking-tight sm:hidden">18</span>
           </button>
 
           {/* Create Pool Button (Tablet & Desktop) */}
           <button
             onClick={onOpenCreatePool}
-            className="hidden md:flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-bold font-mono text-cyan-300 bg-cyan-950/60 hover:bg-cyan-900/60 border border-cyan-500/40 hover:border-cyan-400 rounded transition-all shadow-[0_0_12px_rgba(6,182,212,0.2)] active:scale-95 cursor-pointer"
+            className="hidden md:flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-bold font-mono text-cyan-300 bg-cyan-950/60 hover:bg-cyan-900/60 border border-cyan-500/40 hover:border-cyan-400 rounded-lg transition-all shadow-[0_0_12px_rgba(6,182,212,0.2)] active:scale-95 cursor-pointer shrink-0"
           >
             <PlusCircle className="w-3.5 h-3.5 text-cyan-400" />
             <span>{t('nav.create_pool')}</span>
           </button>
 
-          {/* Key & GiftUp Vault */}
-          <button
-            onClick={onOpenVault}
-            className="relative flex items-center gap-1 p-1 sm:px-2.5 sm:py-1.5 text-[10px] sm:text-xs font-medium font-mono text-slate-200 bg-slate-900/90 hover:bg-slate-800 border border-slate-700 hover:border-slate-600 rounded transition-all active:scale-95 cursor-pointer"
-            title={t('nav.key_vault')}
-          >
-            <Key className="w-3.5 h-3.5 text-amber-400" />
-            <span className="hidden sm:inline">{t('nav.key_vault')}</span>
-            {activeOrdersCount > 0 && (
-              <span className="flex items-center justify-center min-w-3.5 h-3.5 px-0.5 rounded-full bg-cyan-500 text-black text-[8px] sm:text-[9px] font-bold">
-                {activeOrdersCount}
-              </span>
-            )}
-          </button>
-
           {/* Shopping Cart Button */}
           <button
             onClick={() => setIsCartOpen(true)}
-            className={`relative flex items-center gap-1 p-1 sm:px-2.5 sm:py-1.5 text-[10px] sm:text-xs font-medium font-mono rounded transition-all active:scale-95 cursor-pointer ${
+            className={`relative flex items-center gap-1 p-1 sm:px-2.5 sm:py-1.5 text-[10px] sm:text-xs font-medium font-mono rounded-lg transition-all active:scale-95 cursor-pointer shrink-0 ${
               cartTotalCount > 0
                 ? 'text-cyan-300 bg-cyan-950/80 border border-cyan-500/60 shadow-[0_0_12px_rgba(6,182,212,0.3)] animate-pulse'
                 : 'text-slate-300 bg-slate-900/90 hover:bg-slate-800 border border-slate-700'
@@ -329,7 +333,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             title={t('nav.cart')}
           >
             <ShoppingCart className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="hidden sm:inline">{t('nav.cart')}</span>
+            <span className="hidden lg:inline">{t('nav.cart')}</span>
             {cartTotalCount > 0 && (
               <span className="flex items-center justify-center min-w-4 h-4 px-1 rounded-full bg-rose-500 text-white text-[9px] font-bold">
                 {cartTotalCount}
@@ -337,22 +341,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
           </button>
 
-          {/* Deposit Button (ShopClone7 Hub) */}
-          <button
-            onClick={onOpenDepositHub}
-            className="flex items-center gap-1 px-1.5 sm:px-2.5 py-1 sm:py-1.5 text-[10px] sm:text-xs font-bold font-mono text-black bg-gradient-to-r from-emerald-400 to-cyan-400 hover:from-emerald-300 hover:to-cyan-300 rounded shadow-[0_0_12px_rgba(16,185,129,0.35)] transition-all active:scale-95 cursor-pointer"
-            title={t('nav.deposit')}
-          >
-            <CreditCard className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-            <span className="hidden xs:inline">{t('nav.deposit')}</span>
-            <span className="xs:hidden">{t('nav.deposit_short')}</span>
-          </button>
-
           {/* Prominent User Account Section with Dropdown */}
-          <div className="relative" ref={accountMenuRef}>
+          <div className="relative shrink-0" ref={accountMenuRef}>
             <button
               onClick={() => setIsAccountMenuOpen(!isAccountMenuOpen)}
-              className="flex items-center gap-1 sm:gap-1.5 p-0.5 sm:px-2.5 sm:py-1.5 bg-gradient-to-r from-slate-900 via-[#0d1424] to-slate-900 hover:to-[#131c33] border border-cyan-500/40 hover:border-cyan-400 rounded-lg transition-all active:scale-95 text-left cursor-pointer shadow-[0_0_15px_rgba(6,182,212,0.15)]"
+              className="flex items-center gap-1 sm:gap-1.5 p-0.5 sm:px-2 sm:py-1 bg-gradient-to-r from-slate-900 via-[#0d1424] to-slate-900 hover:to-[#131c33] border border-cyan-500/50 hover:border-cyan-400 rounded-lg transition-all active:scale-95 text-left cursor-pointer shadow-[0_0_15px_rgba(6,182,212,0.2)]"
               title={t('nav.account_menu')}
             >
               {/* User Avatar with Status Dot */}
@@ -360,7 +353,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <img
                   src={user.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"}
                   alt={user.name}
-                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover border border-cyan-400/80 shadow-[0_0_8px_rgba(6,182,212,0.5)]"
+                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover border-2 border-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.6)]"
                 />
                 <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-emerald-400 border-2 border-black animate-pulse"></span>
               </div>
@@ -368,14 +361,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               {/* Account Info (Name & Balance - Desktop/Tablet) */}
               <div className="hidden sm:block min-w-0 pr-0.5">
                 <div className="flex items-center gap-1">
-                  <span className="text-xs font-bold font-mono text-white truncate max-w-[100px]">
+                  <span className="text-xs font-bold font-mono text-white truncate max-w-[90px]">
                     {user.name}
                   </span>
                   <span className="px-1 py-0.2 rounded text-[8px] font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-500/40">
                     VIP
                   </span>
                 </div>
-                <div className="text-xs font-bold font-mono text-emerald-400 leading-none mt-0.5">
+                <div className="text-[11px] font-bold font-mono text-emerald-400 leading-none mt-0.5">
                   {formatCurrency(user.walletBalance, user.currency)}
                 </div>
               </div>
@@ -393,7 +386,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   aria-hidden="true"
                 />
 
-                <div className="fixed right-2 top-14 sm:absolute sm:right-0 sm:top-full sm:mt-1.5 w-[calc(100vw-16px)] max-w-[325px] sm:w-80 max-h-[35vh] sm:max-h-[72vh] overflow-y-auto overscroll-contain bg-[#090d16]/98 backdrop-blur-xl border border-cyan-500/60 rounded-xl shadow-[0_12px_45px_rgba(0,0,0,0.95)] z-50 animate-in fade-in zoom-in-95 slide-in-from-top-2 duration-150 scrollbar-thin scrollbar-thumb-cyan-500/40 scrollbar-track-black/40">
+                <div className="fixed right-2 top-14 sm:absolute sm:right-0 sm:top-full sm:mt-1.5 w-[calc(100vw-16px)] max-w-[325px] sm:w-80 max-h-[75dvh] sm:max-h-[75vh] overflow-y-auto overscroll-contain bg-[#090d16]/98 backdrop-blur-xl border border-cyan-500/60 rounded-xl shadow-[0_12px_45px_rgba(0,0,0,0.95)] z-50 animate-in fade-in zoom-in-95 slide-in-from-top-2 duration-150 scrollbar-thin scrollbar-thumb-cyan-500/40 scrollbar-track-black/40">
                   {/* Sticky Header: Profile info & Quick Close */}
                   <div className="sticky top-0 z-10 p-2 sm:p-2.5 bg-gradient-to-r from-slate-900 via-[#0d1627] to-slate-900 border-b border-slate-800 flex items-center justify-between gap-1.5">
                     <div className="flex items-center gap-2 min-w-0">

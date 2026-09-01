@@ -16,6 +16,7 @@ import {
 import { UserProfile, WheelPrize, WheelSpinRecord } from '../types';
 import { formatCurrency } from '../utils/formatters';
 import { useTranslation } from '../i18n';
+import { useUI } from '../contexts/UIContext';
 
 interface LuckyWheelModalProps {
   isOpen: boolean;
@@ -115,6 +116,7 @@ export const LuckyWheelModal: React.FC<LuckyWheelModalProps> = ({
   onOpenWallet
 }) => {
   const { t } = useTranslation();
+  const { showToast } = useUI();
   if (!isOpen) return null;
 
   const [isSpinning, setIsSpinning] = useState(false);
@@ -129,7 +131,10 @@ export const LuckyWheelModal: React.FC<LuckyWheelModalProps> = ({
 
   const handleStartSpin = () => {
     if (user.walletBalance < SPIN_COST) {
-      alert(`${t('common.balance')} (${formatCurrency(user.walletBalance, user.currency)}) < ${formatCurrency(SPIN_COST, user.currency)}`);
+      showToast(`Số dư ví không đủ ${formatCurrency(SPIN_COST, user.currency)} để quay!`, 'warning', {
+        title: 'SỐ DƯ KHÔNG ĐỦ',
+        action: { label: 'Nạp Tiền Ngay →', onClick: onOpenWallet }
+      });
       onOpenWallet();
       return;
     }

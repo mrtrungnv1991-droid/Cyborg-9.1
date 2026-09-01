@@ -135,7 +135,7 @@ export const vi = {
     "badge": "GIẢM SỐC",
     "title_1": "MUA CHUNG KEY BẢN QUYỀN",
     "title_save": "TIẾT KIỆM ĐẾN 80%",
-    "desc": "Giải pháp gom đơn thông minh: Nhận giá sỉ gốc cho ChatGPT Plus, Netflix 4K, Game Steam và 121 tựa game hot. Thanh toán tự động, nhận mã tức thì qua hợp đồng bảo lãnh Escrow 100%.",
+    "desc": "Giải pháp gom đơn thông minh: Nhận giá sỉ gốc cho ChatGPT Plus, Netflix 4K, Game Steam và nhiều tựa game hot. Thanh toán tự động, nhận mã tức thì qua hợp đồng bảo lãnh Escrow 100%.",
     "speed_label": "Tốc Độ Nhận Key",
     "speed_val": "3 - 30 Giây",
     "speed_sub": "Tự động trả mã 24/7",

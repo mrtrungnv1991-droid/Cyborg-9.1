@@ -20,6 +20,7 @@ import {
 import { Product, GroupPool, UserProfile, ProductReview } from '../types';
 import { formatCurrency } from '../utils/formatters';
 import { useTranslation } from '../i18n';
+import { useUI } from '../contexts/UIContext';
 
 interface PoolDetailModalProps {
   product: Product;
@@ -47,6 +48,7 @@ export const PoolDetailModal: React.FC<PoolDetailModalProps> = ({
   onInstantBuy
 }) => {
   const { t } = useTranslation();
+  const { showToast } = useUI();
   const [activeTab, setActiveTab] = useState<'slots' | 'reviews'>('slots');
   const [selectedSlotCount, setSelectedSlotCount] = useState(1);
   const [userRating, setUserRating] = useState<number>(5);
@@ -75,6 +77,9 @@ export const PoolDetailModal: React.FC<PoolDetailModalProps> = ({
     onRateProduct(product.id, userRating, reviewComment);
     setReviewComment('');
     setIsSubmittingReview(false);
+    showToast(`Đã gửi đánh giá ${userRating}⭐ cho ${product.name}!`, 'success', {
+      title: '✓ ĐÁNH GIÁ THÀNH CÔNG'
+    });
     setReviewSubmittedToast(true);
     setTimeout(() => setReviewSubmittedToast(false), 3500);
   };

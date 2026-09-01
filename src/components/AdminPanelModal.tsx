@@ -256,8 +256,8 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 
         {/* Admin Workspace Layout */}
         <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
-          {/* Navigation Sidebar */}
-          <div className="w-full md:w-64 bg-slate-950/80 border-r border-slate-800/80 p-2.5 space-y-1 overflow-y-auto shrink-0 scrollbar-thin">
+          {/* Navigation Sidebar / Mobile Tab Bar */}
+          <div className="w-full md:w-64 bg-slate-950/90 border-b md:border-b-0 md:border-r border-slate-800/80 p-2 md:p-2.5 flex md:flex-col overflow-x-auto md:overflow-y-auto shrink-0 gap-1 md:space-y-1 scrollbar-thin">
             {navTabs.map(tab => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -266,19 +266,19 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                  className={`w-auto md:w-full shrink-0 flex items-center justify-between gap-2 px-3 py-2 md:py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
                     isActive
                       ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-bold shadow-[0_0_15px_rgba(6,182,212,0.35)]'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 bg-slate-900/30 md:bg-transparent border border-slate-800/50 md:border-transparent'
                   }`}
                 >
-                  <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="flex items-center gap-2 min-w-0">
                     <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-black' : 'text-cyan-400'}`} />
                     <span className="truncate">{tab.label}</span>
                   </div>
 
                   {tab.badge !== undefined && (
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-mono shrink-0 ml-1.5 ${
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-mono shrink-0 ml-1 ${
                       isActive 
                         ? 'bg-black/20 text-black font-bold' 
                         : 'bg-slate-900 text-cyan-400 border border-cyan-500/20'
@@ -292,7 +292,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
           </div>
 
           {/* Tab Content Display Viewport */}
-          <div className="flex-1 p-4 sm:p-6 overflow-y-auto bg-[#070b14]/70">
+          <div className="flex-1 p-3 sm:p-5 md:p-6 overflow-y-auto bg-[#070b14]/70">
             {activeTab === 'dashboard' && (
               <AdminDashboardTab
                 products={products}

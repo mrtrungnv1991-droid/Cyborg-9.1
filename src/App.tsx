@@ -61,6 +61,7 @@ import { AiLanguageCurrencyModal } from './components/AiLanguageCurrencyModal';
 import { CartModal } from './components/CartModal';
 import { CheckoutConfirmationModal } from './components/CheckoutConfirmationModal';
 import { MainModulesBar } from './components/MainModulesBar';
+import { GlobalToastContainer } from './components/GlobalToastContainer';
 import { startOracleBackgroundTicker, subscribeToRates } from './utils/rateOracle';
 import { useTranslation } from './i18n';
 
@@ -181,13 +182,6 @@ function AppContent() {
   // Purchase Type Filter ('all' | 'retail_instant' | 'escrow_pools')
   const [purchaseTypeFilter, setPurchaseTypeFilter] = useState<'all' | 'retail_instant' | 'escrow_pools'>('all');
 
-  // Celebration Toast
-  const [celebrationToast, setCelebrationToast] = useState<{
-    title: string;
-    message: string;
-    orderId?: string;
-  } | null>(null);
-
   // Rate Oracle Live Ticker
   const [, setRateVersion] = useState<number>(0);
   useEffect(() => {
@@ -249,11 +243,15 @@ function AppContent() {
 
     triggerConfetti();
 
-    setCelebrationToast({
-      title: '⚡ NẠP GAME THÀNH CÔNG // API ĐÃ BẮN KIM CƯƠNG',
-      message: `Đã nạp ${topupOrder.tierName} cho nhân vật [${topupOrder.characterName || topupOrder.uid}] qua cổng ${topupOrder.provider}.`,
-      orderId: newOrder.id
-    });
+    showToast(
+      `Đã nạp ${topupOrder.tierName} cho nhân vật [${topupOrder.characterName || topupOrder.uid}] qua cổng ${topupOrder.provider}.`,
+      'success',
+      {
+        title: '⚡ NẠP GAME THÀNH CÔNG // API ĐÃ BẮN KIM CƯƠNG',
+        duration: 5000,
+        action: { label: 'Xem đơn nạp →', onClick: () => openModal('vault') }
+      }
+    );
   };
 
   // Telco Card Submit Handler
@@ -267,22 +265,29 @@ function AppContent() {
 
     triggerConfetti(60, 60);
 
-    setCelebrationToast({
-      title: '⚡ GẠCH THẺ THÀNH CÔNG // CỘNG TIỀN VÍ NGAY',
-      message: `Đã nạp thẻ ${submission.telco} ${formatCurrency(submission.declaredAmount, currentUser.currency)} -> Nhận +${formatCurrency(submission.receivedAmount, currentUser.currency)} vào ví!`,
-      orderId: submission.txId
-    });
+    showToast(
+      `Đã nạp thẻ ${submission.telco} ${formatCurrency(submission.declaredAmount, currentUser.currency)} -> Nhận +${formatCurrency(submission.receivedAmount, currentUser.currency)} vào ví!`,
+      'success',
+      {
+        title: '⚡ GẠCH THẺ THÀNH CÔNG // CỘNG TIỀN VÍ NGAY',
+        duration: 5000,
+        action: { label: 'Mở Ví Tiền →', onClick: () => openModal('wallet') }
+      }
+    );
   };
 
   // Lucky Wheel Spin
   const handleSpinSuccess = (_cost: number, prize: WheelPrize) => {
     triggerConfetti(90, 75);
 
-    setCelebrationToast({
-      title: '🎉 TRÚNG THƯỞNG VÒNG QUAY MAY MẮN!',
-      message: `Chúc mừng bạn đã trúng [${prize.name}]. Đã cập nhật vào tài khoản!`,
-      orderId: prize.id
-    });
+    showToast(
+      `Chúc mừng bạn đã trúng [${prize.name}]. Đã cập nhật vào tài khoản!`,
+      'success',
+      {
+        title: '🎉 TRÚNG THƯỞNG VÒNG QUAY MAY MẮN!',
+        duration: 5000
+      }
+    );
   };
 
   // Join Group Buy Pool Handler
@@ -366,17 +371,25 @@ function AppContent() {
       updateEscrowLocked(-pool.pricePerSlot);
       closeModal();
 
-      setCelebrationToast({
-        title: '🎉 NHÓM GOM ĐÃ ĐỦ SLOTS & BUNG KEY THÀNH CÔNG!',
-        message: `Mã bản quyền ${product.title} đã được chuyển an toàn vào Kho Key & GiftUp của bạn.`,
-        orderId: newOrder.id
-      });
+      showToast(
+        `Mã bản quyền ${product.title} đã được chuyển an toàn vào Kho Key & GiftUp của bạn.`,
+        'success',
+        {
+          title: '🎉 NHÓM GOM ĐÃ ĐỦ SLOTS & BUNG KEY THÀNH CÔNG!',
+          duration: 5000,
+          action: { label: 'Xem Kho Key Vault →', onClick: () => openModal('vault') }
+        }
+      );
     } else {
       closeModal();
-      setCelebrationToast({
-        title: '⚡ ĐÃ KHÓA SLOT GOM ĐƠN THÀNH CÔNG',
-        message: `Đã khóa tạm ${formatCurrency(pool.pricePerSlot, currentUser.currency)} trong ví Escrow. Bạn là thành viên #${newFilledSlots}/${pool.targetSlots}. Key sẽ bung ngay khi đủ nhóm!`
-      });
+      showToast(
+        `Đã khóa tạm ${formatCurrency(pool.pricePerSlot, currentUser.currency)} trong ví Escrow. Bạn là thành viên #${newFilledSlots}/${pool.targetSlots}. Key sẽ bung ngay khi đủ nhóm!`,
+        'success',
+        {
+          title: '⚡ ĐÃ KHÓA SLOT GOM ĐƠN THÀNH CÔNG',
+          duration: 5000
+        }
+      );
     }
   };
 
@@ -453,11 +466,15 @@ function AppContent() {
 
     triggerConfetti(80, 70);
 
-    setCelebrationToast({
-      title: '⚡ MUA LẺ THÀNH CÔNG // GIAO KEY TỨC THÌ',
-      message: `Đơn mua ${order.productTitle} đã hoàn tất. Key đã sẵn sàng trong Kho Key của bạn!`,
-      orderId: order.id
-    });
+    showToast(
+      `Đơn mua ${order.productTitle} đã hoàn tất. Key đã sẵn sàng trong Kho Key của bạn!`,
+      'success',
+      {
+        title: '⚡ MUA LẺ THÀNH CÔNG // GIAO KEY TỨC THÌ',
+        duration: 5000,
+        action: { label: 'Mở Kho Key →', onClick: () => openModal('vault') }
+      }
+    );
   };
 
   // Create Pool Handler
@@ -476,10 +493,14 @@ function AppContent() {
 
     triggerConfetti(65, 60);
 
-    setCelebrationToast({
-      title: '🚀 MỞ NHÓM GOM ĐƠN THÀNH CÔNG!',
-      message: `Đã mở nhóm gom #${newPool.id} cho sản phẩm ${product.title} với giá sỉ ${formatCurrency(newPool.pricePerSlot, currentUser.currency)}.`
-    });
+    showToast(
+      `Đã mở nhóm gom #${newPool.id} cho sản phẩm ${product.title} với giá sỉ ${formatCurrency(newPool.pricePerSlot, currentUser.currency)}.`,
+      'success',
+      {
+        title: '🚀 MỞ NHÓM GOM ĐƠN THÀNH CÔNG!',
+        duration: 5000
+      }
+    );
   };
 
   // Rate Product Handler
@@ -820,10 +841,26 @@ function AppContent() {
         )}
       </section>
 
-      {/* 7. Live Telemetry Activity Stream (Giao dịch thời gian thực) */}
+      {/* 7. Footer & Bottom Spacing for Mobile */}
+      <footer className="w-full border-t border-slate-800/80 bg-[#060913] py-8 sm:py-10 pb-28 sm:pb-12 text-center text-xs font-mono text-slate-500">
+        <div className={`w-full ${siteContainerClass} mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4`}>
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-white tracking-wider">CYBER<span className="text-cyan-400">POOL</span></span>
+            <span>•</span>
+            <span className="text-slate-400">Nền Tảng Gom Đơn & Kho Phẩm Số Escrow</span>
+          </div>
+          <div className="flex items-center gap-4 text-slate-400">
+            <span>Bảo lãnh 100% hoàn tiền</span>
+            <span>•</span>
+            <span>Hỗ trợ 24/7</span>
+          </div>
+        </div>
+      </footer>
+
+      {/* 8. Live Telemetry Activity Stream (Giao dịch thời gian thực) */}
       <LiveTelemetryStream currency={currentUser.currency} />
 
-      {/* 8. Global Modals & Dialogs */}
+      {/* 9. Global Modals & Dialogs */}
       {isModalOpen('instantBuy') && modalPayload.selectedProduct && (
         <InstantBuyModal
           isOpen={true}
@@ -1119,46 +1156,8 @@ function AppContent() {
         userName={currentUser.name}
       />
 
-      {/* 10. Floating Celebration Toast */}
-      {celebrationToast && (
-        <div className="fixed bottom-6 right-6 z-50 max-w-md bg-[#0a1124] border border-cyan-500/50 rounded-2xl p-4 shadow-[0_0_30px_rgba(6,182,212,0.35)] animate-in fade-in slide-in-from-bottom-5 duration-300">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-start gap-3">
-              <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 shrink-0">
-                <Sparkles className="w-5 h-5 animate-spin" />
-              </div>
-              <div>
-                <h4 className="text-sm font-extrabold text-white tracking-wide uppercase">
-                  {celebrationToast.title}
-                </h4>
-                <p className="text-xs text-slate-300 mt-1 leading-relaxed">
-                  {celebrationToast.message}
-                </p>
-                {celebrationToast.orderId && (
-                  <div className="mt-2.5 flex items-center gap-2">
-                    <button
-                      onClick={() => {
-                        setCelebrationToast(null);
-                        openModal('vault');
-                      }}
-                      className="px-3 py-1 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 text-[11px] font-bold border border-cyan-500/40 transition-colors cursor-pointer"
-                    >
-                      Xem trong Kho Key Vault &rarr;
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <button
-              onClick={() => setCelebrationToast(null)}
-              className="text-slate-500 hover:text-white p-1"
-            >
-              &times;
-            </button>
-          </div>
-        </div>
-      )}
+      {/* 10. Global Notification & Toast Stack Container */}
+      <GlobalToastContainer />
     </div>
   );
 }

@@ -135,7 +135,7 @@ export const de = {
     "badge": "FLASH-ANGEBOT",
     "title_1": "Sammelkauf für Software & Games",
     "title_save": "Bis zu 80% sparen",
-    "desc": "Intelligente Sammelkäufe: ChatGPT Plus, Netflix 4K, Steam-Games und 121 Spiele zum Großhandelspreis. 100% Treuhandgarantie und automatische Lieferung in Sekunden.",
+    "desc": "Intelligente Sammelkäufe: ChatGPT Plus, Netflix 4K, Steam-Games und viele beliebte Spiele zum Großhandelspreis. 100% Treuhandgarantie und automatische Lieferung in Sekunden.",
     "speed_label": "Lieferzeit",
     "speed_val": "3 - 30 Sek",
     "speed_sub": "24/7 automatischer Versand",

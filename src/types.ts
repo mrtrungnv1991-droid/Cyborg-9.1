@@ -842,6 +842,8 @@ export interface HeroTranslationData {
   pod2Title?: string;
   pod2Val?: string;
   pod2Sub?: string;
+  status?: 'source' | 'auto' | 'manual' | 'failed';
+  updatedAt?: string;
 }
 
 export interface HeroCustomConfig {
@@ -876,7 +878,10 @@ export interface HeroCustomConfig {
   showLaunchpad: boolean;
   launchpadLayout: 'wrap_grid' | 'scrollable_row';
   launchpadButtons: LaunchpadButtonConfig[];
+  sourceLanguage?: 'vi';
   original_language?: string;
+  version?: number;
+  contentHash?: string;
   translations?: Record<string, HeroTranslationData>;
 }
 

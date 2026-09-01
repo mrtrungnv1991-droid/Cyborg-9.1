@@ -2,6 +2,13 @@ import { Product, GroupPool, GameItem, CategoryItem, ProductReview, HeroCustomCo
 import { SupportedLocale } from './types';
 import { CATEGORY_TRANSLATIONS } from './catalogData/categories';
 import { ALL_PRODUCTS_DATA } from './catalogData/allProductsData';
+import { 
+  executeChainTranslation, 
+  translateViToEnglishMaster, 
+  translateEnglishMasterToTarget, 
+  synchronizeBannerTranslations,
+  computeHeroContentHash
+} from './bannerTranslationPipeline';
 
 export interface LocalizedProductData {
   title: string;
@@ -809,7 +816,7 @@ export const HERO_TRANSLATIONS_DICT: Record<string, HeroTranslationData> = {
     badgeText: 'SÀN GOM ĐƠN MUA CHUNG SẢN PHẨM SỐ & KEY BẢN QUYỀN',
     mainHeadingLine1: 'MUA CHUNG KEY BẢN QUYỀN',
     mainHeadingLine2: 'TIẾT KIỆM ĐẾN 80%',
-    subheading: 'Giải pháp gom đơn thông minh: Nhận giá sỉ gốc cho ChatGPT Plus, Netflix 4K, Game Steam và 121 tựa game hot. Thanh toán tự động, nhận mã tức thì qua hợp đồng bảo lãnh Escrow 100%.',
+    subheading: 'Giải pháp gom đơn thông minh: Nhận giá sỉ gốc cho ChatGPT Plus, Netflix 4K, Game Steam và nhiều tựa game hot. Thanh toán tự động, nhận mã tức thì qua hợp đồng bảo lãnh Escrow 100%.',
     pod1Title: 'Tốc Độ Nhận Key',
     pod1Val: '3 - 30 Giây',
     pod1Sub: 'Tự động trả mã 24/7',
@@ -821,7 +828,7 @@ export const HERO_TRANSLATIONS_DICT: Record<string, HeroTranslationData> = {
     badgeText: 'THE #1 GROUP-BUY ESCROW & DIGITAL ASSET PLATFORM',
     mainHeadingLine1: 'SOFTWARE & GAME GROUP BUY',
     mainHeadingLine2: 'SAVE UP TO 80%',
-    subheading: 'Smart group-buy solution: Get direct wholesale pricing for ChatGPT Plus, Netflix 4K, Steam Games, and 121 mobile titles. Instant automated delivery backed by 100% Escrow guarantee.',
+    subheading: 'Smart group-buy solution: Get direct wholesale pricing for ChatGPT Plus, Netflix 4K, Steam Games, and many hot game titles. Instant automated delivery backed by 100% Escrow guarantee.',
     pod1Title: 'Delivery Speed',
     pod1Val: '3 - 30 Seconds',
     pod1Sub: '24/7 Automated Dispatch',
@@ -833,7 +840,7 @@ export const HERO_TRANSLATIONS_DICT: Record<string, HeroTranslationData> = {
     badgeText: '顶级数字产品拼团拼单与安全托管交易平台',
     mainHeadingLine1: '软件与游戏拼团购买',
     mainHeadingLine2: '最高立省 80%',
-    subheading: '智能拼单解决方案：ChatGPT Plus、Netflix 4K、Steam 游戏以及 121 款热门游戏批发低价。100% 智能托管保障，支付后全自动秒级发货。',
+    subheading: '智能拼单解决方案：ChatGPT Plus、Netflix 4K、Steam 游戏以及众多热门游戏批发低价。100% 智能托管保障，支付后全自动秒级发货。',
     pod1Title: '发货时效',
     pod1Val: '3 - 30 秒',
     pod1Sub: '24/7 全天候自动派送',
@@ -845,7 +852,7 @@ export const HERO_TRANSLATIONS_DICT: Record<string, HeroTranslationData> = {
     badgeText: '国内最高峰のデジタル資産共同購入＆安全エスクロー市場',
     mainHeadingLine1: 'ソフトウェア＆ゲームの共同購入',
     mainHeadingLine2: '最大 80% オフ',
-    subheading: 'スマートな共同購入：ChatGPT Plus、Netflix 4K、Steamゲーム、121タイトルの人気ゲームが卸売価格。100% エスクロー保証＆即時自動配信。',
+    subheading: 'スマートな共同購入：ChatGPT Plus、Netflix 4K、Steamゲーム、多数の人気ゲームが卸売価格。100% エスクロー保証＆即時自動配信。',
     pod1Title: '配信速度',
     pod1Val: '3〜30 秒',
     pod1Sub: '24/7 自動即時配信',
@@ -857,7 +864,7 @@ export const HERO_TRANSLATIONS_DICT: Record<string, HeroTranslationData> = {
     badgeText: '국내 1위 디지털 라이선스 공동구매 & 안전 에스크로 거래소',
     mainHeadingLine1: '소프트웨어 & 게임 공동구매',
     mainHeadingLine2: '최대 80% 할인',
-    subheading: '스마트 디지털 공구: ChatGPT Plus, Netflix 4K, Steam 게임 및 121개 인기 게임 도매가 제공. 100% 에스크로 안심 보증과 결제 즉시 자동 발송 시스템.',
+    subheading: '스마트 디지털 공구: ChatGPT Plus, Netflix 4K, Steam 게임 및 다양한 인기 게임 도매가 제공. 100% 에스크로 안심 보증과 결제 즉시 자동 발송 시스템.',
     pod1Title: '발송 속도',
     pod1Val: '3 - 30 초',
     pod1Sub: '24/7 전천후 자동 전송',
@@ -869,7 +876,7 @@ export const HERO_TRANSLATIONS_DICT: Record<string, HeroTranslationData> = {
     badgeText: 'ПЛАТФОРМА №1 ДЛЯ СОВМЕСТНЫХ ПОКУПОК ЦИФРОВЫХ КЛЮЧЕЙ И ЭСКРОУ',
     mainHeadingLine1: 'СОВМЕСТНЫЕ ПОКУПКИ СОФТА И ИГР',
     mainHeadingLine2: 'ЭКОНОМИЯ ДО 80%',
-    subheading: 'Умный групповой выкуп: ChatGPT Plus, Netflix 4K, ключи Steam и 121 популярная игра по оптовым ценам. 100% защита Escrow и автоматическая доставка за секунды.',
+    subheading: 'Умный групповой выкуп: ChatGPT Plus, Netflix 4K, ключи Steam и множество популярных игр по оптовым ценам. 100% защита Escrow и автоматическая доставка за секунды.',
     pod1Title: 'Скорость доставки',
     pod1Val: '3 - 30 сек',
     pod1Sub: '24/7 автоматическая выдача',
@@ -881,7 +888,7 @@ export const HERO_TRANSLATIONS_DICT: Record<string, HeroTranslationData> = {
     badgeText: 'PLATEFORME N°1 D’ACHAT GROUPÉ & SÉQUESTRE NUMÉRIQUE',
     mainHeadingLine1: 'ACHAT GROUPÉ LOGICIELS & JEUX',
     mainHeadingLine2: 'ÉCONOMISEZ JUSQU’À 80%',
-    subheading: 'Solution d’achat groupé intelligente : obtenez des prix de gros pour ChatGPT Plus, Netflix 4K, jeux Steam et 121 jeux mobiles. Livraison automatisée garantie par séquestre 100% Escrow.',
+    subheading: 'Solution d’achat groupé intelligente : obtenez des prix de gros pour ChatGPT Plus, Netflix 4K, jeux Steam et de nombreux jeux populaires. Livraison automatisée garantie par séquestre 100% Escrow.',
     pod1Title: 'Délai de Livraison',
     pod1Val: '3 - 30 Secondes',
     pod1Sub: 'Envoi automatique 24/7',
@@ -893,7 +900,7 @@ export const HERO_TRANSLATIONS_DICT: Record<string, HeroTranslationData> = {
     badgeText: 'DIE NR. 1 PLATTFORM FÜR GRUPPENKAUF & DIGITAL-TREUHAND',
     mainHeadingLine1: 'SOFTWARE- & GAME-GRUPPENKAUF',
     mainHeadingLine2: 'BIS ZU 80% SPAREN',
-    subheading: 'Smarte Sammelkauf-Lösung: Erhalten Sie Großhandelspreise für ChatGPT Plus, Netflix 4K, Steam-Spiele und 121 Spieletitel. Sofortige automatisierte Bereitstellung mit 100% Escrow-Garantie.',
+    subheading: 'Smarte Sammelkauf-Lösung: Erhalten Sie Großhandelspreise für ChatGPT Plus, Netflix 4K, Steam-Spiele und viele beliebte Spieletitel. Sofortige automatisierte Bereitstellung mit 100% Escrow-Garantie.',
     pod1Title: 'Liefertempo',
     pod1Val: '3 - 30 Sekunden',
     pod1Sub: '24/7 Automatischer Versand',
@@ -905,7 +912,7 @@ export const HERO_TRANSLATIONS_DICT: Record<string, HeroTranslationData> = {
     badgeText: 'PLATAFORMA N.º 1 DE COMPRA COLECTIVA Y DEPÓSITO EN GARANTÍA',
     mainHeadingLine1: 'COMPRA COLECTIVA DE SOFTWARE Y JUEGOS',
     mainHeadingLine2: 'AHORRA HASTA UN 80%',
-    subheading: 'Solución inteligente de compra grupal: Precios mayoristas directos para ChatGPT Plus, Netflix 4K, juegos de Steam y 121 títulos para móviles. Entrega automatizada con 100% garantía Escrow.',
+    subheading: 'Solución inteligente de compra grupal: Precios mayoristas directos para ChatGPT Plus, Netflix 4K, juegos de Steam y muchos juegos populares. Entrega automatizada con 100% garantía Escrow.',
     pod1Title: 'Velocidad de Entrega',
     pod1Val: '3 - 30 Segundos',
     pod1Sub: 'Envío automatizado 24/7',
@@ -914,6 +921,427 @@ export const HERO_TRANSLATIONS_DICT: Record<string, HeroTranslationData> = {
     pod2Sub: 'Garantía de sustitución 1:1'
   }
 };
+
+/**
+ * Intelligent Dynamic Sentence & Phrase Translator for Hero text (Vietnamese -> Any Target Language)
+ */
+export function translateHeroSentence(text: string, targetLang: string = 'en'): string {
+  if (!text || !text.trim()) return '';
+  if (targetLang === 'vi') return text;
+
+  // Always normalize Unicode NFC to support both precomposed and decomposed Vietnamese input
+  const normalizedRaw = text.normalize('NFC').trim();
+  const isAllUpper = normalizedRaw === normalizedRaw.toUpperCase() && /[A-ZÀÁẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬÈÉẺẼẸÊẾỀỂỄỆÌÍỈĨỊÒÓỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÙÚỦŨỤƯỨỪỬỮỰỲÝỶỸỴĐ]/.test(normalizedRaw);
+
+  let res = normalizedRaw;
+
+  // 1. Direct clause & sentence map (Highest Priority)
+  const fullMatchMap: Record<string, Record<string, string>> = {
+    'MUA CHUNG GIÁ RẺ - LẺ NHƯ BUÔN': {
+      en: 'CHEAP GROUP BUY - RETAIL AT WHOLESALE PRICES',
+      zh: '低价拼单 - 散买享批发价',
+      ja: '格安共同購入 - 単品でも卸売価格',
+      ko: '초특가 공동구매 - 소매도 도매가로',
+      ru: 'ДЕШЕВЫЙ ГРУППОВОЙ ВЫКУП - РОЗНИЦА ПО ОПТОВЫМ ЦЕНАМ',
+      fr: 'ACHAT GROUPÉ PAS CHER - DÉTAIL AU PRIX DE GROS',
+      de: 'GÜNSTIGER GRUPPENKAUF - EINZELKAUF ZUM GROSSHANDELSPREIS',
+      es: 'COMPRA COLECTIVA ECONÓMICA - AL POR MENOR A PRECIO DE MAYOR'
+    },
+    'MUA CHUNG GIÁ RẺ': {
+      en: 'CHEAP GROUP BUY',
+      zh: '低价拼单',
+      ja: '格安共同購入',
+      ko: '초특가 공동구매',
+      ru: 'ДЕШЕВЫЙ ГРУППОВОЙ ВЫКУП',
+      fr: 'ACHAT GROUPÉ PAS CHER',
+      de: 'GÜNSTIGER GRUPPENKAUF',
+      es: 'COMPRA COLECTIVA ECONÓMICA'
+    },
+    'AN TOÀN - NHANH CHÓNG': {
+      en: 'SAFE & FAST',
+      zh: '安全极速',
+      ja: '安心・迅速',
+      ko: '안전하고 빠른',
+      ru: 'БЕЗОПАСНО И БЫСТРО',
+      fr: 'SÉCURISÉ & RAPIDE',
+      de: 'SICHER & SCHNELL',
+      es: 'SEGURO Y RÁPIDO'
+    },
+    'AN TOÀN – NHANH CHÓNG': {
+      en: 'SAFE & FAST',
+      zh: '安全极速',
+      ja: '安心・迅速',
+      ko: '안전하고 빠른',
+      ru: 'БЕЗОПАСНО И БЫСТРО',
+      fr: 'SÉCURISÉ & RAPIDE',
+      de: 'SICHER & SCHNELL',
+      es: 'SEGURO Y RÁPIDO'
+    },
+    'AN TOÀN, NHANH CHÓNG': {
+      en: 'SAFE & FAST',
+      zh: '安全极速',
+      ja: '安心・迅速',
+      ko: '안전하고 빠른',
+      ru: 'БЕЗОПАСНО И БЫСТРО',
+      fr: 'SÉCURISÉ & RAPIDE',
+      de: 'SICHER & SCHNELL',
+      es: 'SEGURO Y RÁPIDO'
+    },
+    'AN TOÀN': {
+      en: 'SAFE & SECURE',
+      zh: '安全保障',
+      ja: '安心・安全',
+      ko: '안전 보장',
+      ru: 'БЕЗОПАСНО',
+      fr: 'SÉCURISÉ',
+      de: 'SICHER',
+      es: 'SEGURO'
+    },
+    'NHANH CHÓNG': {
+      en: 'FAST & INSTANT',
+      zh: '极速到账',
+      ja: '迅速・即時',
+      ko: '신속 처리',
+      ru: 'БЫСТРО',
+      fr: 'RAPIDE',
+      de: 'SCHNELL',
+      es: 'RÁPIDO'
+    },
+    'UY TÍN': {
+      en: '100% TRUSTED',
+      zh: '信誉保障',
+      ja: '信頼保証',
+      ko: '신뢰 보증',
+      ru: 'НАДЕЖНО',
+      fr: 'FIABLE',
+      de: 'ZUVERLÄSSIG',
+      es: 'CONFIABLE'
+    },
+    'LẺ NHƯ BUÔN': {
+      en: 'RETAIL AT WHOLESALE PRICES',
+      zh: '散买享批发价',
+      ja: '単品でも卸売価格',
+      ko: '소매도 도매가로',
+      ru: 'РОЗНИЦА ПО ОПТОВЫМ ЦЕНАМ',
+      fr: 'DÉTAIL AU PRIX DE GROS',
+      de: 'EINZELKAUF ZUM GROSSHANDELSPREIS',
+      es: 'AL POR MENOR A PRECIO DE MAYOR'
+    },
+    'LẺ GIÁ BUÔN': {
+      en: 'RETAIL AT WHOLESALE PRICES',
+      zh: '零售享批发价',
+      ja: '単品でも卸売価格',
+      ko: '소매도 도매가로',
+      ru: 'РОЗНИЦА ПО ОПТОВЫМ ЦЕНАМ',
+      fr: 'DÉTAIL AU PRIX DE GROS',
+      de: 'EINZELKAUF ZUM GROSSHANDELSPREIS',
+      es: 'AL POR MENOR A PRECIO DE MAYOR'
+    },
+    'MUA LẺ GIÁ SỈ': {
+      en: 'RETAIL AT WHOLESALE PRICES',
+      zh: '散买享批发价',
+      ja: '単品でも卸売価格',
+      ko: '소매도 도매가로',
+      ru: 'РОЗНИЦА ПО ОПТОВЫМ ЦЕНАМ',
+      fr: 'DÉTAIL AU PRIX DE GROS',
+      de: 'EINZELKAUF ZUM GROSSHANDELSPREIS',
+      es: 'AL POR MENOR A PRECIO DE MAYOR'
+    },
+    'SÀN GOM ĐƠN MUA CHUNG SẢN PHẨM SỐ & KEY BẢN QUYỀN': {
+      en: 'THE #1 GROUP-BUY ESCROW & DIGITAL ASSET PLATFORM',
+      zh: '顶级数字产品拼团拼单与安全托管交易平台',
+      ja: '国内最高峰のデジタル資産共同購入＆安全エスクロー市場',
+      ko: '국내 1위 디지털 라이선스 공동구매 & 안전 에스크로 거래소',
+      ru: 'ПЛАТФОРМА №1 ДЛЯ СОВМЕСТНЫХ ПОКУПОК ЦИФРОВЫХ КЛЮЧЕЙ И ЭСКРОУ',
+      fr: 'PLATEFORME N°1 D’ACHAT GROUPÉ & SÉQUESTRE NUMÉRIQUE',
+      de: 'DIE NR. 1 PLATTFORM FÜR GRUPPENKAUF & DIGITAL-TREUHAND',
+      es: 'PLATAFORMA N.º 1 DE COMPRA COLECTIVA Y DEPÓSITO EN GARANTÍA'
+    },
+    'MUA CHUNG KEY BẢN QUYỀN': {
+      en: 'SOFTWARE & GAME GROUP BUY',
+      zh: '软件与游戏拼团购买',
+      ja: 'ソフトウェア＆ゲームの共同購入',
+      ko: '소프트웨어 & 게임 공동구매',
+      ru: 'СОВМЕСТНЫЕ ПОКУПКИ СОФТА И ИГР',
+      fr: 'ACHAT GROUPÉ LOGICIELS & JEUX',
+      de: 'SOFTWARE- & GAME-GRUPPENKAUF',
+      es: 'COMPRA COLECTIVA DE SOFTWARE Y JUEGOS'
+    },
+    'TIẾT KIỆM ĐẾN 80%': {
+      en: 'SAVE UP TO 80%',
+      zh: '最高立省 80%',
+      ja: '最大 80% オフ',
+      ko: '최대 80% 할인',
+      ru: 'ЭКОНОМИЯ ДО 80%',
+      fr: 'ÉCONOMISEZ JUSQU’À 80%',
+      de: 'BIS ZU 80% SPAREN',
+      es: 'AHORRA HASTA UN 80%'
+    },
+    'Tốc Độ Nhận Key': {
+      en: 'Delivery Speed',
+      zh: '发货时效',
+      ja: '配信速度',
+      ko: '발송 속도',
+      ru: 'Скорость доставки',
+      fr: 'Délai de Livraison',
+      de: 'Liefertempo',
+      es: 'Velocidad de Entrega'
+    },
+    'Tự động trả mã 24/7': {
+      en: '24/7 Automated Dispatch',
+      zh: '24/7 全天候自动派送',
+      ja: '24/7 自動即時配信',
+      ko: '24/7 전천후 자동 전송',
+      ru: '24/7 автоматическая выдача',
+      fr: 'Envoi automatique 24/7',
+      de: '24/7 Automatischer Versand',
+      es: 'Envío automatizado 24/7'
+    },
+    'Bảo Lãnh Escrow': {
+      en: 'Escrow Guarantee',
+      zh: '托管保障',
+      ja: 'エスクロー保証',
+      ko: '에스크로 보증',
+      ru: 'Защита Escrow',
+      fr: 'Garantie Escrow',
+      de: 'Escrow-Treuhand',
+      es: 'Garantía Escrow'
+    },
+    '100% Hoàn Tiền': {
+      en: '100% Refundable',
+      zh: '100% 可退款',
+      ja: '100% 返金保証',
+      ko: '100% 환불 보장',
+      ru: '100% Возврат',
+      fr: '100% Remboursable',
+      de: '100% Erstattbar',
+      es: '100% Reembolsable'
+    },
+    'Bảo hành 1:1 mọi lỗi': {
+      en: '1:1 Replacement Warranty',
+      zh: '1:1 换新质保',
+      ja: '1対1 交換保証',
+      ko: '1:1 맞교환 안심케어',
+      ru: 'Замена 1 к 1',
+      fr: 'Remplacement 1:1 garanti',
+      de: '1:1 Sofort-Ersatzgarantie',
+      es: 'Garantía de sustitución 1:1'
+    }
+  };
+
+  // Case-insensitive exact match in map
+  const lowerKey = normalizedRaw.toLowerCase();
+  for (const [k, v] of Object.entries(fullMatchMap)) {
+    if (k.toLowerCase() === lowerKey && v[targetLang]) {
+      const matchRes = v[targetLang];
+      return isAllUpper ? matchRes.toUpperCase() : matchRes;
+    }
+  }
+
+  // 2. Recursive Parentheses & Brackets Handler (e.g. "MUA CHUNG GIÁ RẺ ( AN TOÀN - NHANH CHÓNG )")
+  // Extracts and translates content inside ( ... ), [ ... ], 【 ... 】 individually
+  if (/\([^)]+\)/.test(res) || /\[[^\]]+\]/.test(res) || /【[^】]+】/.test(res)) {
+    res = res.replace(/\(([^)]+)\)/g, (_m, inner) => {
+      const translatedInner = translateHeroSentence(inner.trim(), targetLang);
+      return `( ${translatedInner} )`;
+    });
+    res = res.replace(/\[([^\]]+)\]/g, (_m, inner) => {
+      const translatedInner = translateHeroSentence(inner.trim(), targetLang);
+      return `[ ${translatedInner} ]`;
+    });
+    res = res.replace(/【([^】]+)】/g, (_m, inner) => {
+      const translatedInner = translateHeroSentence(inner.trim(), targetLang);
+      return `【 ${translatedInner} 】`;
+    });
+  }
+
+  // 3. Handle Multi-Clause splitting (e.g. "MUA CHUNG GIÁ RẺ - LẺ NHƯ BUÔN" or "MUA CHUNG | GIÁ SỈ")
+  const delimiters = [' - ', ' – ', ' — ', ' | ', ' • ', ' / ', ' & ', ' + '];
+  for (const delim of delimiters) {
+    if (res.includes(delim)) {
+      const parts = res.split(delim);
+      const translatedParts = parts.map(p => translateHeroSentence(p.trim(), targetLang));
+      const joined = translatedParts.join(delim);
+      return isAllUpper ? joined.toUpperCase() : joined;
+    }
+  }
+
+  // 3. Dynamic pattern replacements for games & quantities
+  // "121 tựa game hot" -> "$1 hot game titles"
+  res = res.replace(/(\d+)\s*(tựa\s*game\s*hot|game\s*hot|tựa\s*game|game)/gi, (_m, num) => {
+    switch (targetLang) {
+      case 'en': return `${num} hot game titles`;
+      case 'zh': return `${num}款热门游戏`;
+      case 'ja': return `${num}タイトルの人気ゲーム`;
+      case 'ko': return `${num}개 인기 게임`;
+      case 'ru': return `${num} популярных игр`;
+      case 'fr': return `${num} jeux populaires`;
+      case 'de': return `${num} beliebte Spieletitel`;
+      case 'es': return `${num} títulos de juegos populares`;
+      default: return `${num} hot game titles`;
+    }
+  });
+
+  // "nhiều tựa game hot" / "nhiều tựa game" -> "many hot game titles"
+  const manyGamesPatterns = [
+    /nhiều\s*tựa\s*game\s*hot/gi,
+    /nhiều\s*game\s*hot/gi,
+    /nhiều\s*tựa\s*game/gi,
+    /nhiều\s*game/gi,
+    /các\s*tựa\s*game\s*hot/gi
+  ];
+  manyGamesPatterns.forEach(pat => {
+    res = res.replace(pat, () => {
+      switch (targetLang) {
+        case 'en': return 'many hot game titles';
+        case 'zh': return '众多热门游戏';
+        case 'ja': return '多数の人気ゲーム';
+        case 'ko': return '다양한 인기 게임';
+        case 'ru': return 'множество популярных игр';
+        case 'fr': return 'de nombreux jeux populaires';
+        case 'de': return 'viele beliebte Spieletitel';
+        case 'es': return 'muchos juegos populares';
+        default: return 'many hot game titles';
+      }
+    });
+  });
+
+  // "hàng ngàn tựa game"
+  res = res.replace(/(hàng\s*ngàn|hàng\s*triệu|vô\s*số)\s*(tựa\s*game|game)/gi, () => {
+    switch (targetLang) {
+      case 'en': return 'thousands of game titles';
+      case 'zh': return '数千款热门游戏';
+      case 'ja': return '何千ものゲームタイトル';
+      case 'ko': return '수천 개의 게임 타이틀';
+      case 'ru': return 'тысячи популярных игр';
+      case 'fr': return 'des milliers de jeux';
+      case 'de': return 'Tausende von Spieletiteln';
+      case 'es': return 'miles de títulos de juegos';
+      default: return 'thousands of game titles';
+    }
+  });
+
+  // "tiết kiệm đến X%"
+  res = res.replace(/tiết\s*kiệm\s*đến\s*(\d+)%/gi, (_m, pct) => {
+    switch (targetLang) {
+      case 'en': return `SAVE UP TO ${pct}%`;
+      case 'zh': return `最高立省 ${pct}%`;
+      case 'ja': return `最大 ${pct}% オフ`;
+      case 'ko': return `최대 ${pct}% 할인`;
+      case 'ru': return `ЭКОНОМИЯ ДО ${pct}%`;
+      case 'fr': return `ÉCONOMISEZ JUSQU’À ${pct}%`;
+      case 'de': return `BIS ZU ${pct}% SPAREN`;
+      case 'es': return `AHORRA HASTA UN ${pct}%`;
+      default: return `SAVE UP TO ${pct}%`;
+    }
+  });
+
+  // Handle standard subheading structure if it matches the general pattern
+  const prefixMatch = res.match(/^(Giải pháp gom đơn thông minh:?\s*Nhận giá sỉ gốc cho\s*)(.*?)(\.?\s*Thanh toán tự động.*)?$/i);
+  if (prefixMatch) {
+    const productsPart = prefixMatch[2] || '';
+    let translatedProducts = productsPart
+      .replace(/Game Steam/gi, 'Steam Games')
+      .replace(/và/gi, targetLang === 'zh' ? '以及' : targetLang === 'ja' ? '、' : targetLang === 'ko' ? ' 및 ' : targetLang === 'ru' ? 'и' : targetLang === 'fr' ? 'et' : targetLang === 'de' ? 'und' : targetLang === 'es' ? 'y' : 'and');
+
+    translatedProducts = translateHeroSentence(translatedProducts, targetLang);
+
+    switch (targetLang) {
+      case 'en':
+        return `Smart group-buy solution: Get direct wholesale pricing for ${translatedProducts}. Instant automated delivery backed by 100% Escrow guarantee.`;
+      case 'zh':
+        return `智能拼单解决方案：${translatedProducts}批发低价。100% 智能托管保障，支付后全自动秒级发货。`;
+      case 'ja':
+        return `スマートな共同購入：${translatedProducts}が卸売価格。100% エスクロー保証＆即時自動配信。`;
+      case 'ko':
+        return `스마트 디지털 공구: ${translatedProducts} 도매가 제공. 100% 에스크로 안심 보증과 결제 즉시 자동 발송 시스템.`;
+      case 'ru':
+        return `Умный групповой выкуп: ${translatedProducts} по оптовым ценам. 100% защита Escrow и автоматическая доставка за секунды.`;
+      case 'fr':
+        return `Solution d’achat groupé intelligente : obtenez des prix de gros pour ${translatedProducts}. Livraison automatisée garantie par séquestre 100% Escrow.`;
+      case 'de':
+        return `Smarte Sammelkauf-Lösung: Erhalten Sie Großhandelspreise für ${translatedProducts}. Sofortige automatisierte Bereitstellung mit 100% Escrow-Garantie.`;
+      case 'es':
+        return `Solución inteligente de compra grupal: Precios mayoristas directos para ${translatedProducts}. Entrega automatizada con 100% garantía Escrow.`;
+    }
+  }
+
+  // 4. Comprehensive Phrase & Vocabulary Substitution Dictionary
+  const vocab: [RegExp, Record<string, string>][] = [
+    [/mua chung giá rẻ/gi, { en: 'Cheap Group Buy', zh: '低价拼单', ja: '格安共同購入', ko: '초특가 공동구매', ru: 'Дешевый групповой выкуп', fr: 'Achat groupé pas cher', de: 'Günstiger Gruppenkauf', es: 'Compra colectiva económica' }],
+    [/lẻ như buôn/gi, { en: 'Retail at Wholesale Prices', zh: '散买享批发价', ja: '単品でも卸売価格', ko: '소매도 도매가로', ru: 'Розница по оптовым ценам', fr: 'Détail au prix de gros', de: 'Einzelkauf zum Großhandelspreis', es: 'Al por menor a precio de mayor' }],
+    [/lẻ giá buôn/gi, { en: 'Retail at Wholesale Prices', zh: '零售享批发价', ja: '単品でも卸売価格', ko: '소매도 도매가로', ru: 'Розница по оптовым ценам', fr: 'Détail au prix de gros', de: 'Einzelkauf zum Großhandelspreis', es: 'Al por menor a precio de mayor' }],
+    [/mua lẻ giá sỉ/gi, { en: 'Retail at Wholesale Prices', zh: '散买享批发价', ja: '単品でも卸売価格', ko: '소매도 도매가로', ru: 'Розница по оптовым ценам', fr: 'Détail au prix de gros', de: 'Einzelkauf zum Großhandelspreis', es: 'Al por menor a precio de mayor' }],
+    [/lẻ giá sỉ/gi, { en: 'Retail at Wholesale Prices', zh: '散买享批发价', ja: '単品でも卸売価格', ko: '소매도 도매가로', ru: 'Розница по оптовым ценам', fr: 'Détail au prix de gros', de: 'Einzelkauf zum Großhandelspreis', es: 'Al por menor a precio de mayor' }],
+    [/mua chung/gi, { en: 'Group Buy', zh: '拼团购买', ja: '共同購入', ko: '공동구매', ru: 'Совместные покупки', fr: 'Achat groupé', de: 'Gruppenkauf', es: 'Compra colectiva' }],
+    [/gom đơn/gi, { en: 'Group Order', zh: '拼单集单', ja: 'まとめ注文', ko: '공구 모집', ru: 'Совместный сбор', fr: 'Regroupement', de: 'Sammelbestellung', es: 'Agrupación de pedidos' }],
+    [/giá sỉ gốc/gi, { en: 'direct wholesale pricing', zh: '源头批发底价', ja: '卸売直販価格', ko: '도매 직거래 원가', ru: 'прямые оптовые цены', fr: 'prix de gros direct', de: 'direkte Großhandelspreise', es: 'precios mayoristas directos' }],
+    [/giá sỉ/gi, { en: 'Wholesale Price', zh: '批发价', ja: '卸売価格', ko: '도매가', ru: 'Оптовая цена', fr: 'Prix de gros', de: 'Großhandelspreis', es: 'Precio mayorista' }],
+    [/giá buôn/gi, { en: 'Wholesale Price', zh: '批发价', ja: '卸売価格', ko: '도매가', ru: 'Оптовая цена', fr: 'Prix de gros', de: 'Großhandelspreis', es: 'Precio mayorista' }],
+    [/giá rẻ/gi, { en: 'Best Price', zh: '超低价', ja: '格安', ko: '최저가', ru: 'Низкие цены', fr: 'Meilleur prix', de: 'Bestpreis', es: 'Mejor precio' }],
+    [/siêu rẻ/gi, { en: 'Super Cheap', zh: '超值底价', ja: '超格安', ko: '초특가', ru: 'Супер дешево', fr: 'Super pas cher', de: 'Super günstig', es: 'Súper barato' }],
+    [/key bản quyền/gi, { en: 'Genuine License Keys', zh: '正版激活密钥', ja: '正規ライセンスキー', ko: '정품 라이선스 키', ru: 'Лицензионные ключи', fr: 'Clés de licence officielles', de: 'Offizielle Lizenzschlüssel', es: 'Claves de licencia oficiales' }],
+    [/bản quyền chính hãng/gi, { en: '100% Genuine License', zh: '官方正版授权', ja: '公式正規ライセンス', ko: '100% 공식 정품', ru: 'Официальная лицензия', fr: 'Licence 100% authentique', de: '100% Originallizenz', es: 'Licencia 100% auténtica' }],
+    [/sản phẩm số/gi, { en: 'Digital Products', zh: '数字产品', ja: 'デジタル商品', ko: '디지털 상품', ru: 'Цифровые товары', fr: 'Produits numériques', de: 'Digitale Produkte', es: 'Productos digitales' }],
+    [/tài khoản premium/gi, { en: 'Premium Accounts', zh: '高级高级账号', ja: 'プレミアムアカウント', ko: '프리미엄 계정', ru: 'Премиум аккаунты', fr: 'Comptes Premium', de: 'Premium-Konten', es: 'Cuentas Premium' }],
+    [/tiết kiệm tối đa/gi, { en: 'Maximum Savings', zh: '最高立省', ja: '最大の節約', ko: '최대 절약', ru: 'Максимальная экономия', fr: 'Économies maximales', de: 'Maximale Ersparnis', es: 'Máximo ahorro' }],
+    [/tiết kiệm/gi, { en: 'Save', zh: '省钱', ja: '節約', ko: '절약', ru: 'Экономия', fr: 'Économie', de: 'Sparen', es: 'Ahorro' }],
+    [/Giải pháp gom đơn thông minh/gi, { en: 'Smart group-buy solution', zh: '智能拼单解决方案', ja: 'スマートな共同購入ソリューション', ko: '스마트 공동구매 솔루션', ru: 'Умное решение для совместных покупок', fr: 'Solution d’achat groupé intelligente', de: 'Smarte Sammelkauf-Lösung', es: 'Solución inteligente de compra grupal' }],
+    [/Thanh toán tự động/gi, { en: 'Automated payment', zh: '全自动秒级支付', ja: '自動決済対応', ko: '자동 결제 시스템', ru: 'Автоматическая оплата', fr: 'Paiement automatisé', de: 'Automatisierte Bezahlung', es: 'Pago automatizado' }],
+    [/nhận mã tức thì/gi, { en: 'instant code delivery', zh: '即时获取激活码', ja: 'コード即時受取', ko: '즉시 코드 수령', ru: 'мгновенная выдача ключа', fr: 'réception instantanée du code', de: 'sofortige Code-Bereitstellung', es: 'entrega instantánea del código' }],
+    [/hợp đồng bảo lãnh Escrow 100%/gi, { en: 'backed by 100% Escrow guarantee', zh: '由 100% 智能托管提供保障', ja: '100% エスクロー保証付き', ko: '100% 에스크로 안심 보증', ru: 'под защитой 100% Escrow', fr: 'garanti à 100% par séquestre Escrow', de: 'abgesichert durch 100% Escrow-Garantie', es: 'respaldado por garantía Escrow 100%' }],
+    [/bảo lãnh escrow/gi, { en: 'Escrow Guarantee', zh: '托管保障', ja: 'エスクロー保証', ko: '에스크로 보증', ru: 'Защита Escrow', fr: 'Garantie Escrow', de: 'Escrow-Treuhand', es: 'Garantía Escrow' }],
+    [/hoàn tiền 100%/gi, { en: '100% Refundable', zh: '100% 可退款', ja: '100% 返金保証', ko: '100% 환불 보장', ru: '100% Возврат', fr: '100% Remboursable', de: '100% Erstattbar', es: '100% Reembolsable' }],
+    [/bảo hành 1:1/gi, { en: '1:1 Replacement Warranty', zh: '1:1 换新质保', ja: '1対1 交換保証', ko: '1:1 맞교환 안심케어', ru: 'Замена 1 к 1', fr: 'Remplacement 1:1 garanti', de: '1:1 Sofort-Ersatzgarantie', es: 'Garantía de sustitución 1:1' }],
+    [/an toàn\s*[-–—&,]\s*nhanh chóng/gi, { en: 'Safe & Fast', zh: '安全极速', ja: '安心・迅速', ko: '안전하고 빠른', ru: 'Безопасно и быстро', fr: 'Sécurisé & Rapide', de: 'Sicher & Schnell', es: 'Seguro y Rápido' }],
+    [/an toàn/gi, { en: 'Safe & Secure', zh: '安全保障', ja: '安心・安全', ko: '안전 보장', ru: 'Безопасно', fr: 'Sécurisé', de: 'Sicher', es: 'Seguro' }],
+    [/nhanh chóng/gi, { en: 'Fast & Instant', zh: '极速到账', ja: '迅速・即時', ko: '신속 처리', ru: 'Быстро', fr: 'Rapide', de: 'Schnell', es: 'Rápido' }],
+    [/uy tín/gi, { en: '100% Trusted', zh: '信誉保障', ja: '信頼保証', ko: '신뢰 보증', ru: 'Надежно', fr: 'Fiable', de: 'Zuverlässig', es: 'Confiable' }],
+    [/chất lượng cao/gi, { en: 'High Quality', zh: '高品质', ja: '高品質', ko: '고품질', ru: 'Высокое качество', fr: 'Haute qualité', de: 'Hohe Qualität', es: 'Alta calidad' }],
+    [/chất lượng/gi, { en: 'Quality', zh: '优质', ja: '品質保証', ko: '품질 보증', ru: 'Качественно', fr: 'Qualité', de: 'Qualität', es: 'Calidad' }],
+    [/tiện lợi/gi, { en: 'Convenient', zh: '便捷', ja: '便利', ko: '편리한', ru: 'Удобно', fr: 'Pratique', de: 'Bequem', es: 'Conveniente' }],
+    [/siêu tốc/gi, { en: 'Ultra Fast', zh: '秒级极速', ja: '超高速', ko: '초고속', ru: 'Сверхбыстро', fr: 'Ultra Rapide', de: 'Ultraschnell', es: 'Ultrarrápido' }],
+    [/chuyên nghiệp/gi, { en: 'Professional', zh: '专业', ja: 'プロ仕様', ko: '전문적인', ru: 'Профессионально', fr: 'Professionnel', de: 'Professionell', es: 'Profesional' }],
+    [/không lo scam/gi, { en: 'Scam-Free Guaranteed', zh: '防骗零风险保障', ja: '詐欺ゼロ保証', ko: '사기 걱정 제로 보증', ru: '100% без скама', fr: 'Garanti sans arnaque', de: 'Garantiert betrugsfrei', es: 'Garantizado sin estafas' }]
+  ];
+
+  vocab.forEach(([pat, trans]) => {
+    if (trans[targetLang]) {
+      res = res.replace(pat, trans[targetLang]);
+    }
+  });
+
+  // If after vocabulary replacement the text still has un-translated Vietnamese words or is dynamic,
+  // pass through the VI -> EN Master -> Target Language chain pipeline
+  if (targetLang !== 'vi' && /[\u00C0-\u1EF9]/i.test(res)) {
+    res = executeChainTranslation(res, targetLang as SupportedLocale);
+  }
+
+  return isAllUpper ? res.toUpperCase() : res;
+}
+
+/**
+ * Translate complete source Hero data into target language
+ */
+export function translateHeroFromSource(
+  source: HeroTranslationData, 
+  targetLang: SupportedLocale
+): HeroTranslationData {
+  if (targetLang === 'vi') return source;
+
+  return {
+    badgeText: translateHeroSentence(source.badgeText || '', targetLang),
+    mainHeadingLine1: translateHeroSentence(source.mainHeadingLine1 || '', targetLang),
+    mainHeadingLine2: translateHeroSentence(source.mainHeadingLine2 || '', targetLang),
+    subheading: translateHeroSentence(source.subheading || '', targetLang),
+    pod1Title: translateHeroSentence(source.pod1Title || '', targetLang),
+    pod1Val: source.pod1Val || '',
+    pod1Sub: translateHeroSentence(source.pod1Sub || '', targetLang),
+    pod2Title: translateHeroSentence(source.pod2Title || '', targetLang),
+    pod2Val: source.pod2Val || '',
+    pod2Sub: translateHeroSentence(source.pod2Sub || '', targetLang)
+  };
+}
 
 // 9-Language Launchpad Buttons Dictionary
 export const LAUNCHPAD_BUTTONS_TRANSLATIONS: Record<string, Record<string, string>> = {
@@ -1043,64 +1471,51 @@ export function getLocalizedHeroConfig(
     return config;
   }
 
-  // Check custom translation in config.translations
+  // If custom translations exist for this language, use them with dynamic fallback
   const customTrans = config.translations?.[localeInput] || 
     config.translations?.[lang] || 
     config.translations?.[cleanLocale];
 
-  // Default translation dict for this language
-  const defaultDict = HERO_TRANSLATIONS_DICT[lang] || HERO_TRANSLATIONS_DICT['en'];
+  // Dynamic automatic translation generated directly from the live config content
+  const dynamicAutoTrans = translateHeroFromSource({
+    badgeText: config.badgeText,
+    mainHeadingLine1: config.mainHeadingLine1,
+    mainHeadingLine2: config.mainHeadingLine2,
+    subheading: config.subheading,
+    pod1Title: config.trustPod1?.title,
+    pod1Val: config.trustPod1?.value,
+    pod1Sub: config.trustPod1?.sub,
+    pod2Title: config.trustPod2?.title,
+    pod2Val: config.trustPod2?.value,
+    pod2Sub: config.trustPod2?.sub
+  }, lang as SupportedLocale);
 
-  // Localized values
-  const badgeText = customTrans?.badgeText || 
-    (t ? t('hero.title') : '') || 
-    defaultDict.badgeText || 
-    config.badgeText;
+  // Localized values: Priority is Custom Override (sanitized) -> Dynamic Translation from Live Config -> Dictionary -> Config
+  const rawBadge = customTrans?.badgeText || dynamicAutoTrans.badgeText || config.badgeText;
+  const rawHeading1 = customTrans?.mainHeadingLine1 || dynamicAutoTrans.mainHeadingLine1 || config.mainHeadingLine1;
+  const rawHeading2 = customTrans?.mainHeadingLine2 || dynamicAutoTrans.mainHeadingLine2 || config.mainHeadingLine2;
+  const rawSubheading = customTrans?.subheading || dynamicAutoTrans.subheading || config.subheading;
 
-  const mainHeadingLine1 = customTrans?.mainHeadingLine1 || 
-    (t ? t('hero.title_1') : '') || 
-    defaultDict.mainHeadingLine1 || 
-    config.mainHeadingLine1;
+  const badgeText = translateHeroSentence(rawBadge, lang);
+  const mainHeadingLine1 = translateHeroSentence(rawHeading1, lang);
+  const mainHeadingLine2 = translateHeroSentence(rawHeading2, lang);
+  const subheading = translateHeroSentence(rawSubheading, lang);
 
-  const mainHeadingLine2 = customTrans?.mainHeadingLine2 || 
-    (t ? t('hero.title_save') : '') || 
-    defaultDict.mainHeadingLine2 || 
-    config.mainHeadingLine2;
+  const rawPod1Title = customTrans?.pod1Title || dynamicAutoTrans.pod1Title || config.trustPod1?.title;
+  const rawPod1Val = customTrans?.pod1Val || dynamicAutoTrans.pod1Val || config.trustPod1?.value;
+  const rawPod1Sub = customTrans?.pod1Sub || dynamicAutoTrans.pod1Sub || config.trustPod1?.sub;
 
-  const subheading = customTrans?.subheading || 
-    (t ? t('hero.desc') : '') || 
-    defaultDict.subheading || 
-    config.subheading;
+  const pod1Title = translateHeroSentence(rawPod1Title || '', lang);
+  const pod1Val = rawPod1Val;
+  const pod1Sub = translateHeroSentence(rawPod1Sub || '', lang);
 
-  const pod1Title = customTrans?.pod1Title || 
-    (t ? t('hero.speed_label') : '') || 
-    defaultDict.pod1Title || 
-    config.trustPod1?.title;
+  const rawPod2Title = customTrans?.pod2Title || dynamicAutoTrans.pod2Title || config.trustPod2?.title;
+  const rawPod2Val = customTrans?.pod2Val || dynamicAutoTrans.pod2Val || config.trustPod2?.value;
+  const rawPod2Sub = customTrans?.pod2Sub || dynamicAutoTrans.pod2Sub || config.trustPod2?.sub;
 
-  const pod1Val = customTrans?.pod1Val || 
-    (t ? t('hero.speed_val') : '') || 
-    defaultDict.pod1Val || 
-    config.trustPod1?.value;
-
-  const pod1Sub = customTrans?.pod1Sub || 
-    (t ? t('hero.speed_sub') : '') || 
-    defaultDict.pod1Sub || 
-    config.trustPod1?.sub;
-
-  const pod2Title = customTrans?.pod2Title || 
-    (t ? t('hero.escrow_label') : '') || 
-    defaultDict.pod2Title || 
-    config.trustPod2?.title;
-
-  const pod2Val = customTrans?.pod2Val || 
-    (t ? t('hero.escrow_val') : '') || 
-    defaultDict.pod2Val || 
-    config.trustPod2?.value;
-
-  const pod2Sub = customTrans?.pod2Sub || 
-    (t ? t('hero.escrow_sub') : '') || 
-    defaultDict.pod2Sub || 
-    config.trustPod2?.sub;
+  const pod2Title = translateHeroSentence(rawPod2Title || '', lang);
+  const pod2Val = rawPod2Val;
+  const pod2Sub = translateHeroSentence(rawPod2Sub || '', lang);
 
   // Localize launchpad buttons if any
   const localizedButtons = (config.launchpadButtons || []).map(btn => {

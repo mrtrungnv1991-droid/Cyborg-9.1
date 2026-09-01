@@ -135,7 +135,7 @@ export const zh = {
     "badge": "限时特惠",
     "title_1": "软件与游戏拼团购买",
     "title_save": "最高立省 80%",
-    "desc": "智能拼单解决方案：ChatGPT Plus、Netflix 4K、Steam 游戏以及 121 款热门游戏批发低价。100% 智能托管保障，支付后全自动秒级发货。",
+    "desc": "智能拼单解决方案：ChatGPT Plus、Netflix 4K、Steam 游戏以及众多热门游戏批发低价。100% 智能托管保障，支付后全自动秒级发货。",
     "speed_label": "发货时效",
     "speed_val": "3 - 30 秒",
     "speed_sub": "24/7 全天候自动派送",

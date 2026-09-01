@@ -135,7 +135,7 @@ export const es = {
     "badge": "OFERTA FLASH",
     "title_1": "Compras grupales de software & juegos",
     "title_save": "Ahorra hasta un 80%",
-    "desc": "Compras grupales inteligentes: ChatGPT Plus, Netflix 4K, juegos de Steam y 121 títulos a precio mayorista. 100% garantizado por Escrow y entrega automática en segundos.",
+    "desc": "Compras grupales inteligentes: ChatGPT Plus, Netflix 4K, juegos de Steam y muchos títulos a precio mayorista. 100% garantizado por Escrow y entrega automática en segundos.",
     "speed_label": "Velocidad de entrega",
     "speed_val": "3 - 30 seg",
     "speed_sub": "Envío automático 24/7",

@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { CTVWithdrawal, Currency } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
+import { useUI } from '../../contexts/UIContext';
 
 interface AdminWithdrawalsTabProps {
   withdrawals: CTVWithdrawal[];
@@ -45,6 +46,7 @@ export const AdminWithdrawalsTab: React.FC<AdminWithdrawalsTabProps> = ({
   onCreateManualWithdrawal,
   currency = 'VND'
 }) => {
+  const { showToast } = useUI();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
   const [typeFilter, setTypeFilter] = useState<'all' | 'affiliate_commission' | 'wallet_balance'>('all');
@@ -103,7 +105,9 @@ export const AdminWithdrawalsTab: React.FC<AdminWithdrawalsTabProps> = ({
   const handleCreateManual = (e: React.FormEvent) => {
     e.preventDefault();
     if (!manualForm.ctvName || !manualForm.accountNumber || manualForm.amount <= 0) {
-      alert('Vui lòng điền đầy đủ tên, số tài khoản và số tiền hợp lệ!');
+      showToast('Vui lòng điền đầy đủ tên, số tài khoản và số tiền hợp lệ!', 'warning', {
+        title: 'THIẾU THÔNG TIN'
+      });
       return;
     }
 
@@ -125,6 +129,9 @@ export const AdminWithdrawalsTab: React.FC<AdminWithdrawalsTabProps> = ({
     }
 
     setIsManualModalOpen(false);
+    showToast('Đã tạo lệnh rút tiền mới thành công!', 'success', {
+      title: '✓ TẠO LỆNH THÀNH CÔNG'
+    });
     setActionNotice('✓ Đã tạo lệnh rút tiền mới thành công!');
     setTimeout(() => setActionNotice(null), 3500);
   };

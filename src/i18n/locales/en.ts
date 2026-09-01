@@ -135,7 +135,7 @@ export const en = {
     "badge": "FLASH DEAL",
     "title_1": "SOFTWARE & GAME GROUP BUY",
     "title_save": "SAVE UP TO 80%",
-    "desc": "Smart group-buy solution: Get direct wholesale pricing for ChatGPT Plus, Netflix 4K, Steam Games, and 121 mobile titles. Instant automated delivery backed by 100% Escrow guarantee.",
+    "desc": "Smart group-buy solution: Get direct wholesale pricing for ChatGPT Plus, Netflix 4K, Steam Games, and many hot game titles. Instant automated delivery backed by 100% Escrow guarantee.",
     "speed_label": "Delivery Speed",
     "speed_val": "3 - 30 Seconds",
     "speed_sub": "24/7 Automated Dispatch",

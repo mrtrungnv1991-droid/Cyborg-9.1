@@ -151,6 +151,8 @@ export class TranslationService {
     translations[originalLanguage] = { ...originalData };
 
     // Try Gemini AI first if API Key is available
+    // 1. If source language is Vietnamese (or non-English), we establish the English Bridge Translation first
+    // This dramatically improves accuracy for JA, KO, ZH, RU, DE, FR, ES
     const gemini = getGeminiClient();
     if (gemini) {
       try {
@@ -177,12 +179,19 @@ export class TranslationService {
       }
     }
 
-    // High quality offline fallback translation engine with term preservation
+    // High quality offline fallback translation engine with English Pivot Translation
+    const englishBridgeData = originalLanguage === 'en' 
+      ? originalData 
+      : this.domainAwareFallbackTranslate(originalData, originalLanguage, 'en');
+
     targetLangs.forEach(lang => {
       if (lang === originalLanguage) {
         translations[lang] = { ...originalData };
+      } else if (lang === 'en') {
+        translations[lang] = englishBridgeData;
       } else {
-        translations[lang] = this.domainAwareFallbackTranslate(originalData, originalLanguage, lang);
+        // Translate using both the original and the English bridge as reference
+        translations[lang] = this.domainAwareFallbackTranslate(englishBridgeData, 'en', lang, originalData);
       }
     });
 
@@ -194,7 +203,9 @@ export class TranslationService {
   }
 
   /**
-   * 3. Translate using Google Gemini 3.7 Flash with strict JSON Schema and marketplace context
+   * 3. Translate using Google Gemini 3.7 Flash with English Pivot Protocol
+   * When source is Vietnamese, the engine first crafts an authoritative English version,
+   * then uses that English master to generate pristine Japanese, Chinese, Korean, Russian, French, German, Spanish.
    */
   private static async translateWithGemini(
     ai: GoogleGenAI,
@@ -205,11 +216,20 @@ export class TranslationService {
     const langsToTranslate = targetLangs.filter(l => l !== srcLang);
     if (langsToTranslate.length === 0) return null;
 
-    const systemPrompt = `You are an expert digital commerce and gaming marketplace localization engine for CYBERPOOL.
-Your task is to translate digital product titles, descriptions, features, delivery terms, and tags from source language "${srcLang}" to target languages: ${langsToTranslate.join(', ')}.
+    const systemPrompt = `You are an elite digital commerce and gaming marketplace localization engine for CYBERPOOL.
+
+================================================================================
+PIVOT TRANSLATION PROTOCOL (CRITICAL REQUIREMENT):
+================================================================================
+When the source input is Vietnamese ("vi"):
+1. STEP 1 (VIETNAMESE -> ENGLISH MASTER BRIDGE):
+   First translate the Vietnamese content into a pristine, natural, fluent English ("en") master for digital gaming, software licenses, and e-commerce escrow.
+2. STEP 2 (ENGLISH MASTER -> MULTILINGUAL TARGETS):
+   Use the clean English master as the semantic bridge to translate into all other languages ("zh", "ja", "ko", "ru", "fr", "de", "es").
+   This completely prevents awkward Vietnamese grammatical calques and produces native-level, idiomatic phrasing in Japanese (natural katakana/kanji terms), Simplified Chinese, Korean (natural gaming/commerce loanwords), Russian, French, German, and Spanish.
 
 MANDATORY RULES:
-1. PRESERVE TECHNICAL AND GAMING TERMS UNCHANGED: Do not translate game titles, weapon names, devil fruits, tiers, or tech acronyms (e.g., Roblox, Blox Fruits, CDK, Godhuman, Soul Guitar, V4, V3, Yoru, Dark Blade, Leopard, Kitsune, Dragon, Dough, Buddha, Portal, Steam Key, Global Key, OpenAI, GPT-4o, GPT-4.5, Midjourney, Claude, Spotify, Netflix, NordVPN, UID, SKU, Escrow, USDT, Vault, IDM, Canva Pro, Windows 11).
+1. PRESERVE TECHNICAL AND GAMING TERMS UNCHANGED: Do not translate or corrupt game titles, weapon names, devil fruits, tiers, or tech acronyms (e.g., Roblox, Blox Fruits, CDK, Godhuman, Soul Guitar, V4, V3, Yoru, Dark Blade, Leopard, Kitsune, Dragon, Dough, Buddha, Portal, Steam Key, Global Key, OpenAI, GPT-4o, GPT-4.5, Midjourney, Claude, Spotify, Netflix, NordVPN, UID, SKU, Escrow, USDT, Vault, IDM, Canva Pro, Windows 11).
 2. TONE & CONTEXT: Professional, high-conversion digital marketplace & gaming escrow store. Phrasing must sound natural to native gamers and shoppers in each language.
 3. PRESERVE UTF-8 ENCODING: Output clean, properly formatted UTF-8 characters for Vietnamese (tiếng Việt), Simplified Chinese (简体中文), Japanese (日本語), Korean (한국어), Russian (Русский), French (Français), German (Deutsch), and Spanish (Español).
 4. OUTPUT FORMAT: Return STRICT JSON ONLY without markdown fences matching the requested schema.`;
@@ -249,21 +269,32 @@ MANDATORY RULES:
   }
 
   /**
-   * 4. Domain-Aware Linguistic Fallback Translator
+   * 4. Domain-Aware Linguistic Fallback Translator with English Bridge support
    * Guarantees accurate marketplace terminology translation even without API keys
    */
   public static domainAwareFallbackTranslate(
     src: TranslatedItemData,
     srcLang: string,
-    targetLang: string
+    targetLang: string,
+    fallbackVi?: TranslatedItemData
   ): TranslatedItemData {
-    const translatePhrase = (text: string): string => {
-      if (!text) return '';
-      let result = text;
+    const translatePhrase = (text: string, altViText?: string): string => {
+      if (!text && !altViText) return '';
+      let result = text || altViText || '';
 
-      // Dictionary of common marketplace phrases (VI -> Target)
+      // Dictionary of common marketplace phrases (Key can be VI or EN)
       const phraseMap: Record<string, Record<string, string>> = {
         'Bản quyền chính hãng 100%': {
+          en: '100% Official & Genuine License',
+          zh: '100% 官方正版授权',
+          ja: '100% 公式正規ライセンス',
+          ko: '100% 공식 정품 라이선스',
+          ru: '100% Официальная лицензия',
+          fr: 'Licence 100% officielle et authentique',
+          de: '100% Offizielle Originallizenz',
+          es: 'Licencia 100% oficial y auténtica'
+        },
+        '100% Official & Genuine License': {
           en: '100% Official & Genuine License',
           zh: '100% 官方正版授权',
           ja: '100% 公式正規ライセンス',
@@ -283,6 +314,16 @@ MANDATORY RULES:
           de: 'Volle Garantie für die gesamte Laufzeit',
           es: 'Garantía total durante todo el período'
         },
+        'Full-term Warranty Protection': {
+          en: 'Full-term Warranty Protection',
+          zh: '全周期质保售后保障',
+          ja: '利用期間中フル保証対応',
+          ko: '이용 기간 전체 워런티 보증',
+          ru: 'Полная гарантия на весь срок',
+          fr: 'Garantie totale sur toute la durée',
+          de: 'Volle Garantie für die gesamte Laufzeit',
+          es: 'Garantía total durante todo el período'
+        },
         'Giao ngay lập tức (Auto Key Vault)': {
           en: 'Instant Delivery (Auto Key Vault)',
           zh: '秒级自动发货 (Auto Key Vault)',
@@ -293,7 +334,27 @@ MANDATORY RULES:
           de: 'Sofortige Lieferung (Auto Key Vault)',
           es: 'Entrega instantánea (Auto Key Vault)'
         },
+        'Instant Delivery (Auto Key Vault)': {
+          en: 'Instant Delivery (Auto Key Vault)',
+          zh: '秒级自动发货 (Auto Key Vault)',
+          ja: '即時自動納品 (Auto Key Vault)',
+          ko: '즉시 자동 발송 (Auto Key Vault)',
+          ru: 'Мгновенная доставка (Auto Key Vault)',
+          fr: 'Livraison instantanée (Auto Key Vault)',
+          de: 'Sofortige Lieferung (Auto Key Vault)',
+          es: 'Entrega instantánea (Auto Key Vault)'
+        },
         'Giao ngay lập tức': {
+          en: 'Instant Delivery',
+          zh: '秒级极速发货',
+          ja: '即時納品',
+          ko: '즉시 발송',
+          ru: 'Мгновенная доставка',
+          fr: 'Livraison instantanée',
+          de: 'Sofortige Lieferung',
+          es: 'Entrega instantánea'
+        },
+        'Instant Delivery': {
           en: 'Instant Delivery',
           zh: '秒级极速发货',
           ja: '即時納品',
@@ -355,25 +416,32 @@ MANDATORY RULES:
         }
       };
 
-      // Direct dictionary lookup
+      // Direct dictionary lookup from text or altViText
       if (phraseMap[result]?.[targetLang]) {
         return phraseMap[result][targetLang];
       }
+      if (altViText && phraseMap[altViText]?.[targetLang]) {
+        return phraseMap[altViText][targetLang];
+      }
 
-      // Suffix/Prefix patterns for Titles (e.g. "30 Ngày" -> "30 Days")
-      const termReplacements: Record<string, Record<string, string>> = {
-        '30 Ngày': { en: '30 Days', zh: '30天', ja: '30日間', ko: '30일권', ru: '30 дней', fr: '30 Jours', de: '30 Tage', es: '30 Días' },
-        '1 Tháng': { en: '1 Month', zh: '1个月', ja: '1ヶ月', ko: '1개월', ru: '1 месяц', fr: '1 Mois', de: '1 Monat', es: '1 Mes' },
-        '1 Năm': { en: '1 Year', zh: '1年', ja: '1年間', ko: '1년권', ru: '1 год', fr: '1 An', de: '1 Jahr', es: '1 Año' },
-        'Vĩnh Viễn': { en: 'Lifetime', zh: '永久授权', ja: '永久版', ko: '평생 소장', ru: 'Навсегда', fr: 'À vie', de: 'Lebenslang', es: 'De por vida' },
-        'Bản Quyền': { en: 'License', zh: '正版', ja: 'ライセンス', ko: '라이선스', ru: 'Лицензия', fr: 'Licence', de: 'Lizenz', es: 'Licencia' },
-        'Gói Mua Chung': { en: 'Group Buy Pool', zh: '拼团套餐', ja: 'グループ購入', ko: '공동 구매', ru: 'Групповая закупка', fr: 'Achat Groupé', de: 'Gruppenkauf', es: 'Compra Grupal' },
-        'Slot Riêng Tư': { en: 'Private Seat', zh: '独立席位', ja: 'プライベートシート', ko: '독립 시트', ru: 'Личный слот', fr: 'Siège Privé', de: 'Privater Platz', es: 'Espacio Privado' }
-      };
+      // Suffix/Prefix patterns for Titles (both VI and EN patterns)
+      const termReplacements: [RegExp, Record<string, string>][] = [
+        [/(an toàn\s*[-–—&,]\s*nhanh chóng|safe & fast|secure & fast)/gi, { en: 'Safe & Fast', zh: '安全极速', ja: '安心・迅速', ko: '안전하고 빠른', ru: 'Безопасно и быстро', fr: 'Sécurisé & Rapide', de: 'Sicher & Schnell', es: 'Seguro y Rápido' }],
+        [/(an toàn|safe & secure|safe)/gi, { en: 'Safe & Secure', zh: '安全保障', ja: '安心・安全', ko: '안전 보장', ru: 'Безопасно', fr: 'Sécurisé', de: 'Sicher', es: 'Seguro' }],
+        [/(nhanh chóng|fast & instant|instant)/gi, { en: 'Fast & Instant', zh: '极速到账', ja: '迅速・即時', ko: '신속 처리', ru: 'Быстро', fr: 'Rapide', de: 'Schnell', es: 'Rápido' }],
+        [/(uy tín|trusted)/gi, { en: '100% Trusted', zh: '信誉保障', ja: '信頼保証', ko: '신뢰 보증', ru: 'Надежно', fr: 'Fiable', de: 'Zuverlässig', es: 'Confiable' }],
+        [/(30 Ngày|30 Days)/gi, { en: '30 Days', zh: '30天', ja: '30日間', ko: '30일권', ru: '30 дней', fr: '30 Jours', de: '30 Tage', es: '30 Días' }],
+        [/(1 Tháng|1 Month)/gi, { en: '1 Month', zh: '1个月', ja: '1ヶ月', ko: '1개월', ru: '1 месяц', fr: '1 Mois', de: '1 Monat', es: '1 Mes' }],
+        [/(1 Năm|1 Year)/gi, { en: '1 Year', zh: '1年', ja: '1年間', ko: '1년권', ru: '1 год', fr: '1 An', de: '1 Jahr', es: '1 Año' }],
+        [/(Vĩnh Viễn|Lifetime)/gi, { en: 'Lifetime', zh: '永久授权', ja: '永久版', ko: '평생 소장', ru: 'Навсегда', fr: 'À vie', de: 'Lebenslang', es: 'De por vida' }],
+        [/(Bản Quyền|License)/gi, { en: 'License', zh: '正版', ja: 'ライセンス', ko: '라이선스', ru: 'Лицензия', fr: 'Licence', de: 'Lizenz', es: 'Licencia' }],
+        [/(Gói Mua Chung|Group Buy Pool)/gi, { en: 'Group Buy Pool', zh: '拼团套餐', ja: 'グループ購入', ko: '공동 구매', ru: 'Групповая закупка', fr: 'Achat Groupé', de: 'Gruppenkauf', es: 'Compra Grupal' }],
+        [/(Slot Riêng Tư|Private Seat)/gi, { en: 'Private Seat', zh: '独立席位', ja: 'プライベートシート', ko: '독립 시트', ru: 'Личный слот', fr: 'Siège Privé', de: 'Privater Platz', es: 'Espacio Privado' }]
+      ];
 
-      Object.entries(termReplacements).forEach(([viTerm, langMap]) => {
+      termReplacements.forEach(([pat, langMap]) => {
         if (langMap[targetLang]) {
-          result = result.replace(new RegExp(viTerm, 'gi'), langMap[targetLang]);
+          result = result.replace(pat, langMap[targetLang]);
         }
       });
 
@@ -381,13 +449,13 @@ MANDATORY RULES:
     };
 
     return {
-      title: translatePhrase(src.title),
-      subtitle: src.subtitle ? translatePhrase(src.subtitle) : undefined,
-      description: translatePhrase(src.description),
-      deliveryEstimate: src.deliveryEstimate ? translatePhrase(src.deliveryEstimate) : undefined,
-      features: src.features?.map(f => translatePhrase(f)) || [],
-      instructions: src.instructions?.map(i => translatePhrase(i)) || [],
-      tags: src.tags?.map(t => translatePhrase(t)) || []
+      title: translatePhrase(src.title, fallbackVi?.title),
+      subtitle: src.subtitle ? translatePhrase(src.subtitle, fallbackVi?.subtitle) : undefined,
+      description: translatePhrase(src.description, fallbackVi?.description),
+      deliveryEstimate: src.deliveryEstimate ? translatePhrase(src.deliveryEstimate, fallbackVi?.deliveryEstimate) : undefined,
+      features: src.features?.map((f, i) => translatePhrase(f, fallbackVi?.features?.[i])) || [],
+      instructions: src.instructions?.map((ins, i) => translatePhrase(ins, fallbackVi?.instructions?.[i])) || [],
+      tags: src.tags?.map((t, i) => translatePhrase(t, fallbackVi?.tags?.[i])) || []
     };
   }
 

@@ -26,6 +26,7 @@ import {
 import { Product, UserProfile, UserOrder } from '../types';
 import { formatCurrency, generateTxHash, generateRandomKey } from '../utils/formatters';
 import { useTranslation } from '../i18n';
+import { useUI } from '../contexts/UIContext';
 
 interface InstantBuyModalProps {
   isOpen: boolean;
@@ -47,6 +48,7 @@ export const InstantBuyModal: React.FC<InstantBuyModalProps> = ({
   onOpenVault
 }) => {
   const { t } = useTranslation();
+  const { showToast } = useUI();
   const [quantity, setQuantity] = useState<number>(1);
   const [voucherCode, setVoucherCode] = useState<string>('');
   const [appliedVoucher, setAppliedVoucher] = useState<{ code: string; discountPercent: number } | null>(null);
@@ -138,7 +140,9 @@ Thank you for trading on CyberPool Escrow Network!
     }
 
     if (method === 'telco' && (!cardPin.trim() || !cardSerial.trim())) {
-      alert(t('errors.generic'));
+      showToast('Vui lòng nhập đầy đủ mã PIN và Số Seri của thẻ cào!', 'warning', {
+        title: 'THIẾU THÔNG TIN THẺ'
+      });
       return;
     }
 
