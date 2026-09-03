@@ -23,8 +23,8 @@ import {
   Plus
 } from 'lucide-react';
 import { VoucherCoupon, WheelPrize, SystemConfig, DepositPromotionRule, Currency, Product } from '../../types';
-import { INITIAL_VOUCHERS, INITIAL_WHEEL_PRIZES } from '../../data/shopclone7AdminData';
-import { INITIAL_DEPOSIT_PROMOTIONS } from '../../data/shopclone7ExtendedData';
+import { INITIAL_VOUCHERS, INITIAL_WHEEL_PRIZES } from '../../data/systemAdminData';
+import { INITIAL_DEPOSIT_PROMOTIONS } from '../../data/systemExtendedData';
 import { INITIAL_PRODUCTS } from '../../data/mockProducts';
 import { formatCurrency } from '../../utils/formatters';
 

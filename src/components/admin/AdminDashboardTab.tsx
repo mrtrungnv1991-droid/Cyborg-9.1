@@ -35,7 +35,7 @@ export const AdminDashboardTab: React.FC<AdminDashboardTabProps> = ({
 }) => {
   return (
     <div className="space-y-6">
-      {/* ShopClone7 System Architecture Telemetry Strip */}
+      {/* System Architecture Telemetry Strip */}
       <div className="p-4 rounded-xl bg-gradient-to-r from-[#0c1322] via-[#0f172a] to-[#0c1322] border border-cyan-500/30 shadow-[0_0_25px_rgba(6,182,212,0.15)] space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
           <div className="flex items-center gap-3">
@@ -173,7 +173,7 @@ export const AdminDashboardTab: React.FC<AdminDashboardTabProps> = ({
           <div className="flex items-center justify-between">
             <h4 className="text-xs font-bold text-white flex items-center gap-2">
               <CreditCard className="w-4 h-4 text-cyan-400 shrink-0" />
-              <span>TỶ LỆ NẠP TIỀN QUA CÁC CỔNG (SHOPCLONE7)</span>
+              <span>TỶ LỆ NẠP TIỀN QUA CÁC CỔNG THANH TOÁN</span>
             </h4>
             <span className="text-[10px] text-emerald-400">Hôm nay</span>
           </div>

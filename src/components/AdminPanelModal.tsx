@@ -24,7 +24,8 @@ import {
   Bot,
   Zap,
   Cpu,
-  CheckCircle2
+  CheckCircle2,
+  DollarSign
 } from 'lucide-react';
 import { 
   Product, 
@@ -69,10 +70,12 @@ import { AdminAuditSecurityTab } from './admin/AdminAuditSecurityTab';
 import { AdminHeroLayoutTab } from './admin/AdminHeroLayoutTab';
 import { AdminSourceConnectorTab } from './admin/AdminSourceConnectorTab';
 import { AdminOrderReliabilityTab } from './admin/AdminOrderReliabilityTab';
+import { AdminPaymentSystemTab } from './admin/AdminPaymentSystemTab';
 
 export type AdminTabType =
   | 'dashboard'
   | 'hero_layout'
+  | 'payment_system'
   | 'products'
   | 'categories'
   | 'manual_fulfillment'
@@ -228,6 +231,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     { id: 'automation_cron', label: 'Cron Jobs & Auto Sync', icon: Clock },
     { id: 'logs', label: 'System Logs', icon: FileText },
     { id: 'suppliers', label: 'Supplier APIs', icon: Server, badge: suppliers.length },
+    { id: 'payment_system', label: 'Hệ Thống Nạp Tiền Độc Lập (Payment Gateway)', icon: DollarSign, badge: 'v1.0' },
     { id: 'source_connector', label: 'Source Accounts & Web Scanner', icon: Cpu, badge: 'No-API' },
     { id: 'source_automation', label: 'Nguồn Mua & Telegram (Phương Án B)', icon: Bot, badge: 'Zero-Drop' },
     { id: 'order_reliability', label: 'Đơn Hàng Đáng Tin Cậy & Key Vault', icon: CheckCircle2, badge: 'Anti-Duplicate' },
@@ -441,6 +445,10 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                 currency={currency}
                 onUpdateSupplierBalance={onUpdateSupplierBalance}
               />
+            )}
+
+            {activeTab === 'payment_system' && (
+              <AdminPaymentSystemTab currency={currency} />
             )}
 
             {activeTab === 'source_connector' && (

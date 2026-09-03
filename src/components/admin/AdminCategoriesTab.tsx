@@ -20,7 +20,7 @@ import {
   Tag
 } from 'lucide-react';
 import { CategoryItem } from '../../types';
-import { INITIAL_EXTENDED_CATEGORIES } from '../../data/shopclone7ExtendedData';
+import { INITIAL_EXTENDED_CATEGORIES } from '../../data/systemExtendedData';
 
 export const AdminCategoriesTab: React.FC = () => {
   const [categories, setCategories] = useState<CategoryItem[]>(INITIAL_EXTENDED_CATEGORIES);
@@ -159,7 +159,7 @@ export const AdminCategoriesTab: React.FC = () => {
             <FolderTree className="w-4 h-4 text-purple-400" />
             <span>QUẢN LÝ CHUYÊN MỤC & PHÂN NHÁNH ĐA CẤP ({categories.length} DANH MỤC)</span>
             <span className="px-2 py-0.5 rounded text-xs bg-purple-950 text-purple-300 border border-purple-500/30 font-medium">
-              ShopClone7 CMS
+              E-Commerce CMS
             </span>
           </h3>
           <p className="text-xs text-slate-400 mt-1">

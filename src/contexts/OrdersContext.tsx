@@ -13,7 +13,7 @@ import {
 } from '../types';
 import { INITIAL_ORDERS } from '../data/mockProducts';
 import { INITIAL_TICKETS } from '../data/mockTopupGames';
-import { INITIAL_MANUAL_ORDERS } from '../data/shopclone7ExtendedData';
+import { INITIAL_MANUAL_ORDERS } from '../data/systemExtendedData';
 import { generateTxHash } from '../utils/formatters';
 import { useAuth } from './AuthContext';
 import { useWallet } from './WalletContext';

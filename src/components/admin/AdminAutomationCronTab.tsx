@@ -16,7 +16,7 @@ import {
   RefreshCcw
 } from 'lucide-react';
 import { CronJobItem, CronExecutionLog } from '../../types';
-import { INITIAL_CRON_JOBS, INITIAL_CRON_LOGS } from '../../data/shopclone7ExtendedData';
+import { INITIAL_CRON_JOBS, INITIAL_CRON_LOGS } from '../../data/systemExtendedData';
 
 export const AdminAutomationCronTab: React.FC = () => {
   const [cronJobs, setCronJobs] = useState<CronJobItem[]>(INITIAL_CRON_JOBS);

@@ -25,7 +25,7 @@ interface RawGameSeed {
   }>;
 }
 
-// 121 Games Catalog (ShopClone7 & Game4Win Engine)
+// 121 Games Catalog (TopUp & Game Engine)
 const RAW_GAMES_SEED: RawGameSeed[] = [
   // 1-10: HoYoverse & Riot Games
   {

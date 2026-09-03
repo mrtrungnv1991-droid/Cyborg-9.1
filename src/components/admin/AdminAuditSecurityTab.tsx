@@ -19,7 +19,7 @@ import {
   Server
 } from 'lucide-react';
 import { AuditLog, SystemConfig } from '../../types';
-import { INITIAL_AUDIT_LOGS } from '../../data/shopclone7AdminData';
+import { INITIAL_AUDIT_LOGS } from '../../data/systemAdminData';
 
 interface AdminAuditSecurityTabProps {
   systemConfig?: SystemConfig;
@@ -87,7 +87,7 @@ export const AdminAuditSecurityTab: React.FC<AdminAuditSecurityTabProps> = ({
   };
 
   const handleSendTestTelegram = () => {
-    setSaveNotice('🔔 [ShopClone7 Telemetry] Đã gửi thông báo thử nghiệm tới Telegram Chat ID: ' + telegramForm.telegramChatId);
+    setSaveNotice('🔔 [Security Telemetry] Đã gửi thông báo thử nghiệm tới Telegram Chat ID: ' + telegramForm.telegramChatId);
     setTimeout(() => setSaveNotice(null), 4000);
   };
 
@@ -108,7 +108,7 @@ export const AdminAuditSecurityTab: React.FC<AdminAuditSecurityTabProps> = ({
           <h3 className="text-xs font-bold text-white uppercase flex items-center gap-2">
             <span>NHẬT KÝ HOẠT ĐỘNG & BẢO MẬT HỆ THỐNG ({logs.length} LOGS)</span>
             <span className="px-2 py-0.5 rounded text-[10px] bg-red-950 text-red-300 border border-red-500/30">
-              ShopClone7 Security
+              System Security
             </span>
           </h3>
           <p className="text-[11px] text-slate-400 font-sans mt-0.5">
@@ -246,7 +246,7 @@ export const AdminAuditSecurityTab: React.FC<AdminAuditSecurityTabProps> = ({
                   <span className="font-bold text-white text-xs">CHẾ ĐỘ ANTI-DDOS LAYER 7 SHIELD</span>
                 </div>
                 <span className="px-2 py-0.5 rounded bg-red-950 text-red-300 border border-red-500/30 text-[10px]">
-                  ShopClone7 WAF
+                  Cloudflare & WAF
                 </span>
               </div>
 

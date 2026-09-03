@@ -10,7 +10,7 @@ import {
 } from '../types';
 import { INITIAL_PRODUCTS } from '../../src/data/mockProducts';
 import { INITIAL_GAMES, INITIAL_SUPPLIERS } from '../../src/data/mockTopupGames';
-import { INITIAL_VOUCHERS } from '../../src/data/shopclone7AdminData';
+import { INITIAL_VOUCHERS } from '../../src/data/systemAdminData';
 import { ALL_PRODUCTS_DATA } from '../../src/i18n/catalogData/allProductsData';
 import { PRODUCT_TRANSLATIONS } from '../../src/i18n/catalogTranslations';
 

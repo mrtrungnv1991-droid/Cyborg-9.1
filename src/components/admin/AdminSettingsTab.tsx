@@ -259,7 +259,7 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({
               <label className="text-slate-400 font-bold block mb-1">Bản Quyền Chân Trang (Copyright):</label>
               <input
                 type="text"
-                value={formData.copyrightText || '© 2026 ShopClone7 Ultimate. All rights reserved.'}
+                value={formData.copyrightText || '© 2026 Cyber Game Store. All rights reserved.'}
                 onChange={(e) => handleChange('copyrightText', e.target.value)}
                 className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-slate-300"
               />
@@ -325,7 +325,7 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({
                 className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-slate-300"
               >
                 <option value="cyber">Cyber Escrow (Grid Hiện Đại + Tag Phân Loại)</option>
-                <option value="classic">ShopClone Cổ Điển (Bảng Danh Mục Truyền Thống)</option>
+                <option value="classic">Giao Diện Cổ Điển (Bảng Danh Mục Truyền Thống)</option>
               </select>
             </div>
           </div>

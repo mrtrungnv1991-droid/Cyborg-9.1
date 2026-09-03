@@ -80,7 +80,7 @@ export const DATABASE_64_TABLES: DatabaseTableInfo[] = [
     sampleColumns: ['id', 'game_id', 'server_id', 'server_name', 'region_code', 'status', 'sort_order']
   },
 
-  // 2. Product & Stock CMS (ShopClone7)
+  // 2. Product & Stock CMS
   {
     name: 'products',
     category: 'products',

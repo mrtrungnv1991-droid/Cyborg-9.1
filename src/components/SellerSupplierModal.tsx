@@ -79,7 +79,7 @@ export const SellerSupplierModal: React.FC<SellerSupplierModalProps> = ({
               <h2 className="text-base sm:text-lg font-bold font-mono text-white flex items-center gap-2">
                 <span>WHOLESALE SELLER & SUPPLIER API (ADCP OS)</span>
                 <span className="px-2 py-0.5 rounded text-[10px] bg-cyan-950 text-cyan-400 border border-cyan-500/30 uppercase">
-                  ShopClone7 Architecture
+                  Multi-Vendor Architecture
                 </span>
               </h2>
               <p className="text-xs text-slate-400 font-mono mt-0.5">
@@ -288,7 +288,7 @@ export const SellerSupplierModal: React.FC<SellerSupplierModalProps> = ({
         <div className="p-4 sm:p-6 border-t border-slate-800 bg-[#070a12] flex items-center justify-between">
           <div className="text-xs font-mono text-slate-400 flex items-center gap-2">
             <span className="inline-block w-2 h-2 rounded-full bg-emerald-400"></span>
-            <span>ShopClone7 Sync Service Online</span>
+            <span>Supplier Sync Service Online</span>
           </div>
 
           <button

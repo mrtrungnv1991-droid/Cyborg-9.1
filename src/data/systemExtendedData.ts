@@ -431,7 +431,7 @@ export const INITIAL_BLOCKED_IPS: BlockedIPItem[] = [
     type: 'auto_bruteforce',
     blockedAt: '10:14 - 21/08/2026',
     expiresAt: '28/08/2026',
-    blockedBy: 'ShopClone7 WAF Guard',
+    blockedBy: 'Cyber WAF Guard',
     requestCountBlocked: 4892
   },
   {
@@ -532,7 +532,7 @@ export const INITIAL_CRON_JOBS: CronJobItem[] = [
     lastRunTime: '00:00:00 - 21/08/2026',
     nextRunTime: '12:00:00 - 21/08/2026',
     lastStatus: 'success',
-    lastLogMessage: 'Đã xuất file backup shopclone7_backup_2026_08_21.sql (24.8 MB) lên Cloud Storage',
+    lastLogMessage: 'Đã xuất file backup system_backup_2026_08_21.sql (24.8 MB) lên Cloud Storage',
     enabled: true,
     totalRuns: 12
   }
@@ -783,7 +783,7 @@ export const INITIAL_ADMIN_STAFF: AdminStaffUser[] = [
     id: 'staff-01',
     username: 'Root_SuperAdmin',
     fullName: 'Lê Hoàng Long (Quản Trị Tối Cao)',
-    email: 'admin.shopclone7@gmail.com',
+    email: 'admin.cybergame@gmail.com',
     roleId: 'role-superadmin',
     roleName: 'Quản Trị Viên Tối Cao',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
@@ -869,7 +869,7 @@ export const INITIAL_THEME_CONFIG: ThemeConfig = {
     {
       id: 'banner-01',
       url: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1600&auto=format&fit=crop&q=80',
-      title: 'HỆ THỐNG PHẦN MỀM & GAME SỐ SHOPCLONE7',
+      title: 'HỆ THỐNG PHẦN MỀM & GAME SỐ TỰ ĐỘNG',
       subtitle: 'Sàn Gom Đơn Escrow Mua Chung Bản Quyền - Rẻ Hơn Tới 80%',
       buttonText: 'Khám Phá Ngay',
       buttonLink: '#products',
@@ -885,10 +885,10 @@ export const INITIAL_THEME_CONFIG: ThemeConfig = {
       active: true
     }
   ],
-  noticeMarquee: '🔥 CHÀO MỪNG BẠN ĐẾN VỚI HỆ THỐNG SHOPCLONE7 - NẠP TIỀN TỰ ĐỘNG QUA VIETQR TẶNG THÊM 5-15% - HỖ TRỢ CSKH 24/7 TRỰC TUYẾN 🔥',
+  noticeMarquee: '🔥 CHÀO MỪNG BẠN ĐẾN VỚI HỆ THỐNG GAME SỐ - NẠP TIỀN TỰ ĐỘNG QUA VIETQR TẶNG THÊM 5-15% - HỖ TRỢ CSKH 24/7 TRỰC TUYẾN 🔥',
   showMarquee: true,
   decorationEffect: 'snow',
-  footerCopyright: '© 2026 ShopClone7 Architecture Engine. Powered by Cyber Escrow & Anti-DDOS Shield.'
+  footerCopyright: '© 2026 Cyber Gaming Engine. Powered by Escrow & Anti-DDOS Shield.'
 };
 
 // ============================================================================

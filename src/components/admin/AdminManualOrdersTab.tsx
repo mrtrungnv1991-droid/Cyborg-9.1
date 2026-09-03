@@ -18,10 +18,16 @@ import {
   User, 
   ShieldCheck,
   AlertCircle,
-  MessageSquare
+  MessageSquare,
+  TrendingUp,
+  Wallet,
+  Layers,
+  BarChart3,
+  Flame,
+  ChevronRight
 } from 'lucide-react';
 import { ManualOrder, Currency, SourcePendingOrder } from '../../types';
-import { INITIAL_MANUAL_ORDERS } from '../../data/shopclone7ExtendedData';
+import { INITIAL_MANUAL_ORDERS } from '../../data/systemExtendedData';
 import { formatCurrency } from '../../utils/formatters';
 import { DualStreamChatModal } from './DualStreamChatModal';
 
@@ -41,6 +47,31 @@ export const AdminManualOrdersTab: React.FC<AdminManualOrdersTabProps> = ({ curr
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [activeDualStreamOrder, setActiveDualStreamOrder] = useState<SourcePendingOrder | null>(null);
 
+  // Comprehensive overview metrics
+  const totalOrders = orders.length;
+  const pendingOrders = orders.filter(o => o.status === 'pending_process');
+  const processingOrders = orders.filter(o => o.status === 'processing');
+  const completedOrders = orders.filter(o => o.status === 'completed');
+  const refundedOrders = orders.filter(o => o.status === 'refunded');
+
+  const pendingCount = pendingOrders.length;
+  const processingCount = processingOrders.length;
+  const completedCount = completedOrders.length;
+  const refundedCount = refundedOrders.length;
+
+  const needActionOrders = orders.filter(o => o.status === 'pending_process' || o.status === 'processing');
+  const pendingRevenue = needActionOrders.reduce((sum, o) => sum + o.totalPrice, 0);
+  const completedRevenue = completedOrders.reduce((sum, o) => sum + o.totalPrice, 0);
+  const totalRevenue = orders.reduce((sum, o) => sum + o.totalPrice, 0);
+
+  const keyGameCount = orders.filter(o => o.productType === 'key_game').length;
+  const topupCount = orders.filter(o => o.productType === 'topup_manual').length;
+  const giftCardCount = orders.filter(o => o.productType === 'gift_card').length;
+
+  const completionRate = totalOrders > 0 
+    ? Math.round((completedOrders.length / (totalOrders - refundedOrders.length || 1)) * 100) 
+    : 100;
+
   const filteredOrders = orders.filter(ord => {
     const matchSearch = (ord.orderCode || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (ord.customerName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -53,6 +84,8 @@ export const AdminManualOrdersTab: React.FC<AdminManualOrdersTabProps> = ({ curr
 
     return matchSearch && matchStatus && matchType;
   });
+
+  const filteredRevenue = filteredOrders.reduce((sum, o) => sum + o.totalPrice, 0);
 
   const handleOpenProcess = (ord: ManualOrder) => {
     setSelectedOrder(ord);
@@ -178,26 +211,219 @@ export const AdminManualOrdersTab: React.FC<AdminManualOrdersTabProps> = ({ curr
 
   return (
     <div className="space-y-4 font-sans text-sm">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
-        <div>
-          <h3 className="text-sm font-bold text-white uppercase flex items-center gap-2 tracking-wide">
-            <Clock className="w-4 h-4 text-amber-400" />
-            <span>HÀNG ĐỢI XỬ LÝ ĐƠN HÀNG THỦ CÔNG ({orders.filter(o => o.status === 'pending_process' || o.status === 'processing').length} ĐƠN CHỜ DUYỆT)</span>
-            <span className="px-2 py-0.5 rounded text-xs bg-amber-950 text-amber-300 border border-amber-500/30 font-medium">
-              Manual Fulfillment
-            </span>
-          </h3>
-          <p className="text-xs text-slate-400 mt-1">
-            Duyệt & bàn giao các đơn hàng: Key Game thủ công, Mã thẻ quà tặng (Gift Card) và Dịch vụ nạp game theo UID/Server.
-          </p>
+      {/* Overview Dashboard Banner */}
+      <div className="bg-gradient-to-r from-slate-900/95 via-slate-900/80 to-slate-950/95 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl backdrop-blur-sm space-y-4">
+        {/* Top title & global metrics */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-slate-800/80 pb-3.5">
+          <div>
+            <div className="flex items-center gap-2 flex-wrap mb-1.5">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-amber-950/80 text-amber-300 border border-amber-500/30 text-[11px] font-bold uppercase tracking-wider">
+                <Clock className="w-3.5 h-3.5 text-amber-400" />
+                <span>Hàng Đợi Xử Lý Đơn Hàng Thủ Công</span>
+              </span>
+              <span className="px-2 py-0.5 rounded-md bg-cyan-950/80 text-cyan-300 border border-cyan-500/30 text-[11px] font-medium">
+                ⚡ Manual & Game Top-Up Queue
+              </span>
+              {needActionOrders.length > 0 && (
+                <span className="px-2 py-0.5 rounded-md bg-rose-950/80 text-rose-300 border border-rose-500/30 text-[11px] font-bold animate-pulse flex items-center gap-1">
+                  <Flame className="w-3 h-3 text-rose-400" />
+                  <span>{needActionOrders.length} ĐƠN CẦN DUYỆT GẤP</span>
+                </span>
+              )}
+            </div>
+            <h2 className="text-sm sm:text-base font-bold text-white tracking-tight uppercase">
+              BẢNG ĐIỀU PHỐI & TỔNG QUAN XỬ LÝ ĐƠN HÀNG THỦ CÔNG
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5 leading-relaxed max-w-2xl">
+              Giám sát toàn diện luồng bàn giao Key Game, nạp Game UID/Server và mã thẻ E-Gift Card với cơ chế Escrow tạm giữ an toàn.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 self-start lg:self-center">
+            <div className="px-3.5 py-2 rounded-xl bg-slate-950/90 border border-slate-800 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+                <Wallet className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Tổng Doanh Thu Hàng Đợi</div>
+                <div className="text-sm font-bold text-amber-300 font-mono">
+                  {formatCurrency(totalRevenue, currency)}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-slate-400">Tổng doanh thu chờ giao:</span>
-          <span className="px-3 py-1 rounded-lg bg-amber-950/80 border border-amber-500/30 text-amber-300 font-bold font-mono text-xs">
-            {formatCurrency(orders.filter(o => o.status === 'pending_process' || o.status === 'processing').reduce((s, o) => s + o.totalPrice, 0), currency)}
-          </span>
+        {/* 4 Interactive KPI Metric Cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {/* Card 1: Chờ xử lý */}
+          <button
+            type="button"
+            onClick={() => setStatusFilter(statusFilter === 'pending_process' ? 'all' : 'pending_process')}
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer relative overflow-hidden group ${
+              statusFilter === 'pending_process'
+                ? 'bg-amber-950/50 border-amber-500/80 shadow-lg shadow-amber-500/15'
+                : 'bg-slate-950/70 hover:bg-slate-900/90 border-slate-800/90'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5" />
+                <span>Chờ Duyệt Giao</span>
+              </span>
+              {pendingCount > 0 && (
+                <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+              )}
+            </div>
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="text-xl sm:text-2xl font-black text-amber-300 font-mono">{pendingCount}</span>
+              <span className="text-xs text-slate-400 font-medium">đơn hàng</span>
+            </div>
+            <div className="mt-1 text-[11px] text-slate-400">
+              <span>Chờ giao: <strong className="text-amber-400 font-mono">{formatCurrency(orders.filter(o => o.status === 'pending_process').reduce((s,o)=>s+o.totalPrice, 0), currency)}</strong></span>
+            </div>
+            <div className="text-[10px] text-amber-400/80 mt-1 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+              <span>Bấm để lọc nhóm này</span> <ChevronRight className="w-3 h-3" />
+            </div>
+          </button>
+
+          {/* Card 2: Đang nạp / xử lý */}
+          <button
+            type="button"
+            onClick={() => setStatusFilter(statusFilter === 'processing' ? 'all' : 'processing')}
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer relative overflow-hidden group ${
+              statusFilter === 'processing'
+                ? 'bg-cyan-950/50 border-cyan-500/80 shadow-lg shadow-cyan-500/15'
+                : 'bg-slate-950/70 hover:bg-slate-900/90 border-slate-800/90'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
+                <RotateCcw className="w-3.5 h-3.5 animate-spin" />
+                <span>Đang Nạp / Check</span>
+              </span>
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-500/30">
+                In-Progress
+              </span>
+            </div>
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="text-xl sm:text-2xl font-black text-cyan-300 font-mono">{processingCount}</span>
+              <span className="text-xs text-slate-400 font-medium">đang chạy</span>
+            </div>
+            <div className="mt-1 text-[11px] text-slate-400">
+              <span>Giá trị: <strong className="text-cyan-400 font-mono">{formatCurrency(orders.filter(o => o.status === 'processing').reduce((s,o)=>s+o.totalPrice, 0), currency)}</strong></span>
+            </div>
+            <div className="text-[10px] text-cyan-400/80 mt-1 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+              <span>Bấm để lọc nhóm này</span> <ChevronRight className="w-3 h-3" />
+            </div>
+          </button>
+
+          {/* Card 3: Đã bàn giao thành công */}
+          <button
+            type="button"
+            onClick={() => setStatusFilter(statusFilter === 'completed' ? 'all' : 'completed')}
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer relative overflow-hidden group ${
+              statusFilter === 'completed'
+                ? 'bg-emerald-950/50 border-emerald-500/80 shadow-lg shadow-emerald-500/15'
+                : 'bg-slate-950/70 hover:bg-slate-900/90 border-slate-800/90'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>Đã Giao Thành Công</span>
+              </span>
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-500/30">
+                Fulfilled
+              </span>
+            </div>
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="text-xl sm:text-2xl font-black text-emerald-400 font-mono">{completedCount}</span>
+              <span className="text-xs text-slate-400 font-medium">hoàn tất</span>
+            </div>
+            <div className="mt-1 text-[11px] text-slate-400">
+              <span>Doanh thu: <strong className="text-emerald-400 font-mono">{formatCurrency(completedRevenue, currency)}</strong></span>
+            </div>
+            <div className="text-[10px] text-emerald-400/80 mt-1 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+              <span>Bấm để lọc nhóm này</span> <ChevronRight className="w-3 h-3" />
+            </div>
+          </button>
+
+          {/* Card 4: Hiệu suất SLA */}
+          <div className="p-3.5 rounded-xl border border-slate-800/90 bg-slate-950/70 text-left">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold text-purple-400 uppercase tracking-wider flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Hiệu Suất & SLA</span>
+              </span>
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-500/30">
+                100% Bảo Đảm
+              </span>
+            </div>
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="text-xl sm:text-2xl font-black text-white font-mono">{completionRate}%</span>
+              <span className="text-xs text-emerald-400 font-medium font-mono">Tỷ lệ thành công</span>
+            </div>
+            <div className="mt-1 text-[11px] text-slate-400">
+              <span>TG xử lý TB: <strong className="text-slate-200">~4 phút</strong> • Hoàn ví: <strong className="text-rose-400 font-mono">{refundedCount}</strong></span>
+            </div>
+          </div>
+        </div>
+
+        {/* Visual Progress Bar & Category Breakdown */}
+        <div className="pt-2 border-t border-slate-800/80 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+          <div className="flex-1 space-y-1.5">
+            <div className="flex items-center justify-between text-[11px] text-slate-400">
+              <span className="font-semibold text-slate-300 flex items-center gap-1.5">
+                <BarChart3 className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Tiến Độ Bàn Giao Toàn Hệ Thống ({completedCount}/{totalOrders} đơn)</span>
+              </span>
+              <span className="font-mono font-bold text-slate-300">
+                {totalOrders > 0 ? Math.round((completedCount / totalOrders) * 100) : 0}% Hoàn tất
+              </span>
+            </div>
+
+            {/* Segmented Bar */}
+            <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden flex">
+              <div
+                style={{ width: `${totalOrders > 0 ? (pendingCount / totalOrders) * 100 : 0}%` }}
+                className="bg-amber-400 transition-all duration-500"
+                title={`Chờ duyệt: ${pendingCount}`}
+              />
+              <div
+                style={{ width: `${totalOrders > 0 ? (processingCount / totalOrders) * 100 : 0}%` }}
+                className="bg-cyan-400 transition-all duration-500"
+                title={`Đang nạp/xử lý: ${processingCount}`}
+              />
+              <div
+                style={{ width: `${totalOrders > 0 ? (completedCount / totalOrders) * 100 : 0}%` }}
+                className="bg-emerald-400 transition-all duration-500"
+                title={`Đã hoàn tất: ${completedCount}`}
+              />
+              <div
+                style={{ width: `${totalOrders > 0 ? (refundedCount / totalOrders) * 100 : 0}%` }}
+                className="bg-rose-500 transition-all duration-500"
+                title={`Đã hoàn tiền: ${refundedCount}`}
+              />
+            </div>
+          </div>
+
+          {/* Product Type Tags */}
+          <div className="flex items-center gap-2 flex-wrap shrink-0">
+            <span className="text-[11px] text-slate-400 font-medium">Kho mặt hàng:</span>
+            <span className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-[11px] text-cyan-300 flex items-center gap-1">
+              <Gamepad2 className="w-3 h-3 text-cyan-400" />
+              <span>Key Game ({keyGameCount})</span>
+            </span>
+            <span className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-[11px] text-amber-300 flex items-center gap-1">
+              <Zap className="w-3 h-3 text-amber-400" />
+              <span>Nạp UID ({topupCount})</span>
+            </span>
+            <span className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-[11px] text-pink-300 flex items-center gap-1">
+              <Gift className="w-3 h-3 text-pink-400" />
+              <span>Gift Card ({giftCardCount})</span>
+            </span>
+          </div>
         </div>
       </div>
 
@@ -207,6 +433,100 @@ export const AdminManualOrdersTab: React.FC<AdminManualOrdersTabProps> = ({ curr
           <span>{saveNotice}</span>
         </div>
       )}
+
+      {/* Quick Interactive Status Filter Tabs */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+        <button
+          type="button"
+          onClick={() => setStatusFilter('all')}
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
+            statusFilter === 'all'
+              ? 'bg-white text-slate-950 shadow-md font-extrabold'
+              : 'bg-slate-900/80 hover:bg-slate-800 text-slate-400 border border-slate-800'
+          }`}
+        >
+          <span>Tất Cả Đơn Hàng</span>
+          <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono ${
+            statusFilter === 'all' ? 'bg-slate-900 text-white' : 'bg-slate-800 text-slate-300'
+          }`}>
+            {totalOrders}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setStatusFilter('pending_process')}
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
+            statusFilter === 'pending_process'
+              ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20 font-extrabold'
+              : 'bg-slate-900/80 hover:bg-slate-800 text-slate-400 border border-slate-800'
+          }`}
+        >
+          <Clock className="w-3.5 h-3.5 text-amber-400" />
+          <span>Chờ Xử Lý</span>
+          <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono ${
+            statusFilter === 'pending_process' ? 'bg-black text-amber-300 font-bold' : 'bg-amber-950 text-amber-300'
+          }`}>
+            {pendingCount}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setStatusFilter('processing')}
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
+            statusFilter === 'processing'
+              ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20 font-extrabold'
+              : 'bg-slate-900/80 hover:bg-slate-800 text-slate-400 border border-slate-800'
+          }`}
+        >
+          <RotateCcw className="w-3.5 h-3.5 text-cyan-400" />
+          <span>Đang Xử Lý</span>
+          <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono ${
+            statusFilter === 'processing' ? 'bg-black text-cyan-300 font-bold' : 'bg-cyan-950 text-cyan-300'
+          }`}>
+            {processingCount}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setStatusFilter('completed')}
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
+            statusFilter === 'completed'
+              ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20 font-extrabold'
+              : 'bg-slate-900/80 hover:bg-slate-800 text-slate-400 border border-slate-800'
+          }`}
+        >
+          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+          <span>Đã Giao Hàng</span>
+          <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono ${
+            statusFilter === 'completed' ? 'bg-black text-emerald-300 font-bold' : 'bg-emerald-950 text-emerald-300'
+          }`}>
+            {completedCount}
+          </span>
+        </button>
+
+        {refundedCount > 0 && (
+          <button
+            type="button"
+            onClick={() => setStatusFilter('refunded')}
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
+              statusFilter === 'refunded'
+                ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20 font-extrabold'
+                : 'bg-slate-900/80 hover:bg-slate-800 text-slate-400 border border-slate-800'
+            }`}
+          >
+            <XCircle className="w-3.5 h-3.5 text-rose-400" />
+            <span>Đã Hoàn Tiền</span>
+            <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono ${
+              statusFilter === 'refunded' ? 'bg-black text-rose-300 font-bold' : 'bg-rose-950 text-rose-300'
+            }`}>
+              {refundedCount}
+            </span>
+          </button>
+        )}
+      </div>
 
       {/* Filter and Search */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-slate-900/40 p-2.5 rounded-xl border border-slate-800">
@@ -223,27 +543,30 @@ export const AdminManualOrdersTab: React.FC<AdminManualOrdersTabProps> = ({ curr
 
         <div className="flex items-center gap-2">
           <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-300 text-xs focus:outline-none focus:border-amber-500"
-          >
-            <option value="all">Tất cả trạng thái</option>
-            <option value="pending_process">Chờ xử lý</option>
-            <option value="processing">Đang xử lý</option>
-            <option value="completed">Đã giao hàng</option>
-            <option value="refunded">Đã hoàn tiền</option>
-          </select>
-
-          <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
             className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-300 text-xs focus:outline-none focus:border-amber-500"
           >
-            <option value="all">Tất cả loại đơn</option>
+            <option value="all">Tất cả mặt hàng</option>
             <option value="key_game">Key Game</option>
             <option value="gift_card">Gift Card</option>
             <option value="topup_manual">Nạp Game UID</option>
           </select>
+
+          {(searchTerm || statusFilter !== 'all' || typeFilter !== 'all') && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearchTerm('');
+                setStatusFilter('all');
+                setTypeFilter('all');
+              }}
+              className="px-2.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs transition-colors cursor-pointer whitespace-nowrap"
+              title="Đặt lại bộ lọc"
+            >
+              Đặt lại
+            </button>
+          )}
         </div>
       </div>
 
@@ -401,6 +724,23 @@ export const AdminManualOrdersTab: React.FC<AdminManualOrdersTabProps> = ({ curr
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Table Footer Summary */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 px-3.5 py-3 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-400">
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <span>Đang hiển thị: <strong className="text-white font-mono">{filteredOrders.length}</strong> / <span className="font-mono">{totalOrders}</span> đơn</span>
+          <span className="text-slate-700">•</span>
+          <span>Tổng giá trị đơn đang lọc: <strong className="text-emerald-400 font-mono text-sm">{formatCurrency(filteredRevenue, currency)}</strong></span>
+        </div>
+        <div className="flex items-center gap-3 text-[11px] text-slate-400">
+          <span className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span>Cổng Escrow & Auto-Fulfillment hoạt động</span>
+          </span>
+          <span className="text-slate-700">•</span>
+          <span>SLA phản hồi: <strong className="text-slate-200">~4 phút</strong></span>
+        </div>
       </div>
 
       {/* Fulfillment Processing Modal */}

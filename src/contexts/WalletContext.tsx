@@ -5,7 +5,7 @@ import {
   TopupInvoice, 
   CTVWithdrawal 
 } from '../types';
-import { INITIAL_CTV_WITHDRAWALS } from '../data/shopclone7ExtendedData';
+import { INITIAL_CTV_WITHDRAWALS } from '../data/systemExtendedData';
 import { useAuth } from './AuthContext';
 import { walletApi } from '../api/wallet';
 

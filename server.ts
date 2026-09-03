@@ -17,6 +17,7 @@ import { webhookRouter } from './server/routes/api/v1/webhookRoutes';
 import { sourceAutomationRouter } from './server/routes/api/v1/sourceAutomationRoutes';
 import { sourceConnectorRouter } from './server/routes/api/v1/sourceConnectorRoutes';
 import { reliableOrderRouter } from './server/routes/api/v1/reliableOrderRoutes';
+import { paymentRouter } from './server/routes/api/v1/paymentRoutes';
 
 async function startServer() {
   const app = express();
@@ -51,6 +52,7 @@ async function startServer() {
   app.use('/api/v1/source-automation', sourceAutomationRouter);
   app.use('/api/v1/source-connector', sourceConnectorRouter);
   app.use('/api/v1/reliable-orders', reliableOrderRouter);
+  app.use('/api/v1/payments', paymentRouter);
 
   // Vite middleware for development vs Static files for production
   if (process.env.NODE_ENV !== 'production') {

@@ -15,7 +15,7 @@ import {
   EyeOff
 } from 'lucide-react';
 import { BlockedIPItem, SystemConfig } from '../../types';
-import { INITIAL_BLOCKED_IPS } from '../../data/shopclone7ExtendedData';
+import { INITIAL_BLOCKED_IPS } from '../../data/systemExtendedData';
 
 interface AdminSecurityIpTabProps {
   systemConfig?: SystemConfig;

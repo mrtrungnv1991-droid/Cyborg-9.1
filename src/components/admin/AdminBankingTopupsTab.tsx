@@ -21,7 +21,7 @@ import {
   Check
 } from 'lucide-react';
 import { TopupInvoice, SystemConfig, Currency } from '../../types';
-import { INITIAL_INVOICES } from '../../data/shopclone7AdminData';
+import { INITIAL_INVOICES } from '../../data/systemAdminData';
 import { formatCurrency } from '../../utils/formatters';
 
 interface AdminBankingTopupsTabProps {
@@ -136,7 +136,7 @@ export const AdminBankingTopupsTab: React.FC<AdminBankingTopupsTabProps> = ({
             <Zap className="w-4 h-4 text-emerald-400" />
             <span>CỔNG NẠP TIỀN TỰ ĐỘNG & QUẢN LÝ HÓA ĐƠN ({invoices.length} GIAO DỊCH)</span>
             <span className="px-2 py-0.5 rounded text-xs bg-emerald-950 text-emerald-300 border border-emerald-500/30 font-medium">
-              ShopClone7 Gateways
+              Payment Gateways
             </span>
           </h3>
           <p className="text-xs text-slate-400 mt-1">

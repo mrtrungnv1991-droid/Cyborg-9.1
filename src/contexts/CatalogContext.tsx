@@ -8,7 +8,7 @@ import {
 } from '../types';
 import { INITIAL_PRODUCTS } from '../data/mockProducts';
 import { INITIAL_GAMES } from '../data/mockTopupGames';
-import { INITIAL_EXTENDED_CATEGORIES } from '../data/shopclone7ExtendedData';
+import { INITIAL_EXTENDED_CATEGORIES } from '../data/systemExtendedData';
 import { productsApi } from '../api/products';
 import { useTranslation, getLocalizedProduct, getLocalizedCategory, getLocalizedGame, registerDynamicProductTranslations } from '../i18n';
 

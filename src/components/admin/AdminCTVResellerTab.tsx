@@ -18,7 +18,7 @@ import {
   Wallet
 } from 'lucide-react';
 import { CTVUser, CTVWithdrawal, CTVTier, Currency } from '../../types';
-import { INITIAL_CTV_USERS, INITIAL_CTV_WITHDRAWALS, INITIAL_CTV_TIERS } from '../../data/shopclone7ExtendedData';
+import { INITIAL_CTV_USERS, INITIAL_CTV_WITHDRAWALS, INITIAL_CTV_TIERS } from '../../data/systemExtendedData';
 import { formatCurrency } from '../../utils/formatters';
 
 interface AdminCTVResellerTabProps {
@@ -416,7 +416,7 @@ export const AdminCTVResellerTab: React.FC<AdminCTVResellerTabProps> = ({ curren
             <span>HỆ THỐNG ĐẤU NỐI WEBSITE CON (CHILD SITES RESELLER)</span>
           </h4>
           <p className="text-[11px] text-slate-400 font-sans">
-            Đại lý chỉ cần trỏ CNAME tên miền riêng về IP máy chủ: <code className="bg-slate-950 px-2 py-0.5 rounded text-cyan-300 font-mono">103.28.36.19</code> hoặc CNAME <code className="bg-slate-950 px-2 py-0.5 rounded text-cyan-300 font-mono">cname.shopclone7.cyberescrow.io</code>. Hệ thống sẽ tự động cấp SSL HTTPS và nhận diện thương hiệu riêng của đại lý.
+            Đại lý chỉ cần trỏ CNAME tên miền riêng về IP máy chủ: <code className="bg-slate-950 px-2 py-0.5 rounded text-cyan-300 font-mono">103.28.36.19</code> hoặc CNAME <code className="bg-slate-950 px-2 py-0.5 rounded text-cyan-300 font-mono">cname.cyberescrow.io</code>. Hệ thống sẽ tự động cấp SSL HTTPS và nhận diện thương hiệu riêng của đại lý.
           </p>
 
           <div className="overflow-x-auto rounded-lg border border-slate-800">

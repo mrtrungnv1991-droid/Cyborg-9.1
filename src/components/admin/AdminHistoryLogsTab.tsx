@@ -16,7 +16,7 @@ import {
   Calendar
 } from 'lucide-react';
 import { BalanceLogItem, LoginHistoryItem, WebhookLogItem, Currency } from '../../types';
-import { INITIAL_BALANCE_LOGS, INITIAL_LOGIN_LOGS, INITIAL_WEBHOOK_LOGS } from '../../data/shopclone7ExtendedData';
+import { INITIAL_BALANCE_LOGS, INITIAL_LOGIN_LOGS, INITIAL_WEBHOOK_LOGS } from '../../data/systemExtendedData';
 import { formatCurrency } from '../../utils/formatters';
 
 interface AdminHistoryLogsTabProps {

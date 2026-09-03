@@ -15,7 +15,7 @@ import {
   Sliders
 } from 'lucide-react';
 import { AdminRoleItem, AdminStaffUser, AdminPermission, Currency } from '../../types';
-import { INITIAL_ADMIN_ROLES, INITIAL_ADMIN_STAFF } from '../../data/shopclone7ExtendedData';
+import { INITIAL_ADMIN_ROLES, INITIAL_ADMIN_STAFF } from '../../data/systemExtendedData';
 
 interface AdminRolesTabProps {
   currency?: Currency;

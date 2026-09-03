@@ -6,7 +6,7 @@ import {
   VoucherCoupon 
 } from '../types';
 import { INITIAL_SUPPLIERS } from '../data/mockTopupGames';
-import { INITIAL_VOUCHERS } from '../data/shopclone7ExtendedData';
+import { INITIAL_VOUCHERS } from '../data/systemExtendedData';
 import { adminApi, AdminStats, AdminAuditLog } from '../api/admin';
 
 interface AdminContextType {

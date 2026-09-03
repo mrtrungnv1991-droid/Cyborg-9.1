@@ -31,7 +31,7 @@ export const AdminDatabaseSchemaTab: React.FC<AdminDatabaseSchemaTabProps> = () 
             </div>
             <div>
               <h3 className="text-sm font-bold font-mono text-white flex items-center gap-2">
-                <span>SHOPCLONE7 // 64 DATABASE TABLES SCHEMAS</span>
+                <span>SYSTEM ARCHITECTURE // 64 DATABASE TABLES SCHEMAS</span>
                 <span className="px-2 py-0.5 rounded text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-500/40 font-mono">
                   schema_clean.sql VERIFIED
                 </span>
@@ -63,7 +63,7 @@ export const AdminDatabaseSchemaTab: React.FC<AdminDatabaseSchemaTabProps> = () 
           <div className="p-2 rounded bg-black/40 border border-slate-800">
             <div className="text-slate-500 text-[10px]">MÃ NGUỒN PHP CORE</div>
             <div className="text-amber-400 font-bold text-sm mt-0.5">388 Files</div>
-            <div className="text-[9px] text-slate-400">ShopClone7 Engine & Crons</div>
+            <div className="text-[9px] text-slate-400">Core Engine & Crons</div>
           </div>
 
           <div className="p-2 rounded bg-black/40 border border-slate-800">
