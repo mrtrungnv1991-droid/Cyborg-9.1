@@ -14,6 +14,9 @@ import { adminRouter } from './server/routes/api/v1/adminRoutes';
 import { notificationRouter } from './server/routes/api/v1/notificationRoutes';
 import { affiliateRouter } from './server/routes/api/v1/affiliateRoutes';
 import { webhookRouter } from './server/routes/api/v1/webhookRoutes';
+import { sourceAutomationRouter } from './server/routes/api/v1/sourceAutomationRoutes';
+import { sourceConnectorRouter } from './server/routes/api/v1/sourceConnectorRoutes';
+import { reliableOrderRouter } from './server/routes/api/v1/reliableOrderRoutes';
 
 async function startServer() {
   const app = express();
@@ -45,6 +48,9 @@ async function startServer() {
   app.use('/api/v1/notifications', notificationRouter);
   app.use('/api/v1/affiliate', affiliateRouter);
   app.use('/api/v1/webhooks', webhookRouter);
+  app.use('/api/v1/source-automation', sourceAutomationRouter);
+  app.use('/api/v1/source-connector', sourceConnectorRouter);
+  app.use('/api/v1/reliable-orders', reliableOrderRouter);
 
   // Vite middleware for development vs Static files for production
   if (process.env.NODE_ENV !== 'production') {

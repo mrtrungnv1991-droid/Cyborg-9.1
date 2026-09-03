@@ -1,6 +1,6 @@
 {
   "name": "CYBERPOOL // Digital Group-Buy & Game TopUp Exchange",
-  "description": "Sàn thương mại điện tử gom đơn mua chung sản phẩm số & nạp game tự động ShopClone7 / Game4Win: 121 Games, 1.702 Tiers, 64 Bảng Database SQL, hỗ trợ đa cổng nạp tiền và quản trị CMS toàn diện.",
+  "description": "Sàn thương mại điện tử gom đơn mua chung sản phẩm số, nạp game tự động, tích hợp Source Account Connector, Website Product Scan Engine và Reliable Order Processing & Zero-Drop Delivery Architecture.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

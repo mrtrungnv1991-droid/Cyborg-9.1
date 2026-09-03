@@ -894,3 +894,188 @@ export interface UiLayoutConfig {
 
 export type SystemConfiguration = SystemConfig;
 
+// ================= PHƯƠNG ÁN B: TỰ ĐỘNG HÓA NGUỒN TÀI KHOẢN & TELEGRAM ALERT =================
+
+export interface SourceAccountConfig {
+  id: string;
+  sourceName: string; // e.g. "Muakey.com"
+  sourceUrl: string; // e.g. "https://muakey.com"
+  accountUsername: string;
+  sessionToken: string; // Bearer token / Cookie / Session
+  balance: number;
+  currency: CurrencyCode;
+  minThreshold: number; // Ngưỡng cảnh báo số dư, ví dụ: 200,000 VND
+  status: 'ONLINE' | 'LOW_BALANCE' | 'SESSION_EXPIRING' | 'OFFLINE';
+  lastChecked: string;
+  autoReconcile: boolean;
+  notes?: string;
+}
+
+export interface TelegramZeroDropConfig {
+  botToken: string;
+  chatId: string;
+  backupChatId?: string;
+  enabled: boolean;
+  retryAttempts: number; // Mặc định 10 lần retry
+  sendThresholdAlerts: boolean;
+  sendOrderPurchaseAlerts: boolean;
+  inlineButtonsEnabled: boolean;
+}
+
+export interface TelegramQueueItem {
+  id: string;
+  orderId?: string;
+  chatId: string;
+  messageText: string;
+  status: 'QUEUED' | 'SENDING' | 'DELIVERED' | 'RETRYING' | 'FAILED';
+  attempts: number;
+  maxAttempts: number;
+  lastAttemptAt?: string;
+  deliveredAt?: string;
+  httpStatus?: number;
+  errorMessage?: string;
+  createdAt: string;
+}
+
+export interface SourcePendingOrder {
+  id: string;
+  orderCode: string;
+  customerName: string;
+  productTitle: string;
+  productType: 'key_game' | 'account' | 'topup_manual' | 'gift_card';
+  retailPrice: number;
+  sourceEstimatedCost: number;
+  sourceName: string;
+  idempotencyKey: string;
+  status: 'AWAITING_FUNDS' | 'PURCHASING_SOURCE' | 'KEY_EXTRACTED' | 'COMMITTED_VAULT' | 'FULFILLED' | 'MANUAL_SUPPORT';
+  sourceAccountBalance: number;
+  fundsNeeded: number;
+  telegramAlertSent: boolean;
+  deliveredContent?: string;
+  accountDetails?: {
+    uid?: string;
+    emailDelivery?: string;
+    accountNote?: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface DualStreamChatMessage {
+  id: string;
+  orderId: string;
+  stream: 'CUSTOMER' | 'SOURCE_PROVIDER';
+  sender: 'CUSTOMER' | 'ADMIN' | 'PROVIDER_SUPPORT';
+  senderName: string;
+  text: string;
+  timestamp: string;
+  isForwarded?: boolean;
+}
+
+// SOURCE ACCOUNT CONNECTOR & SCAN ENGINE TYPES
+export interface SourceAccountRecord {
+  id: string;
+  name: string;
+  domain: string;
+  username: string;
+  maskedUsername: string;
+  hasPassword: boolean;
+  hasSession: boolean;
+  browser_profile_id: string;
+  connector_type: 'BROWSER' | 'API' | 'HYBRID';
+  scanner_profile: string;
+  status: 'ONLINE' | 'DEGRADED' | 'SESSION_EXPIRED' | 'LOGIN_FAILED' | 'SOURCE_UNAVAILABLE' | 'REAUTH_REQUIRED' | 'BLOCKED' | 'DISABLED';
+  balance: number;
+  currency: string;
+  low_balance_threshold: number;
+  is_active: boolean;
+  concurrency_limit: number;
+  request_delay_ms: number;
+  last_login_at?: string;
+  last_scan_at?: string;
+  last_successful_scan_at?: string;
+  last_purchase_at?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SourceProductItem {
+  id: string;
+  source_account_id: string;
+  source_product_id: string;
+  source_url: string;
+  title: string;
+  description?: string;
+  category_raw?: string;
+  original_price: number;
+  original_currency: string;
+  stock: number;
+  source_status: 'IN_STOCK' | 'OUT_OF_STOCK' | 'DISABLED' | 'UNKNOWN' | 'SOURCE_REMOVED';
+  is_sync_ignored: boolean;
+  missing_scan_count: number;
+  price_override?: number;
+  markup_percent?: number;
+  fixed_markup?: number;
+  auto_sync_price: boolean;
+  first_seen_at: string;
+  last_seen_at: string;
+  last_synced_at: string;
+}
+
+export interface SourceScanJobRecord {
+  id: string;
+  source_account_id: string;
+  source_account_name?: string;
+  scan_type: 'FULL' | 'INCREMENTAL' | 'PRODUCT';
+  status: 'QUEUED' | 'RUNNING' | 'SUCCESS' | 'FAILED' | 'CANCELLED';
+  progress: number;
+  total_categories: number;
+  processed_categories: number;
+  total_products: number;
+  processed_products: number;
+  created_count: number;
+  updated_count: number;
+  skipped_count: number;
+  failed_count: number;
+  current_step?: string;
+  correlation_id: string;
+  started_at?: string;
+  finished_at?: string;
+  error_message?: string;
+  created_at: string;
+}
+
+export interface SourceOfferItem {
+  id: string;
+  internal_product_id: string;
+  source_account_id: string;
+  source_product_id: string;
+  source_name: string;
+  source_price: number;
+  currency: string;
+  calculated_final_price: number;
+  stock: number;
+  priority: number;
+  status: 'ACTIVE' | 'INSUFFICIENT_FUNDS' | 'OUT_OF_STOCK' | 'OFFLINE';
+  last_verified_at: string;
+}
+
+export interface ScannerProfileItem {
+  profileId: string;
+  name: string;
+  domainPattern: string;
+  loginUrl: string;
+  categoryListUrl: string;
+  categorySelector: string;
+  paginationStrategy: 'PAGE' | 'LOAD_MORE' | 'INFINITE_SCROLL' | 'CURSOR';
+  maxPagesSafetyLimit: number;
+  productCardSelector: string;
+  titleSelector: string;
+  priceSelector: string;
+  stockSelector: string;
+  statusSelector: string;
+  politenessDelayMs: number;
+}
+
+
+

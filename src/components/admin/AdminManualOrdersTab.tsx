@@ -17,11 +17,13 @@ import {
   FileText, 
   User, 
   ShieldCheck,
-  AlertCircle
+  AlertCircle,
+  MessageSquare
 } from 'lucide-react';
-import { ManualOrder, Currency } from '../../types';
+import { ManualOrder, Currency, SourcePendingOrder } from '../../types';
 import { INITIAL_MANUAL_ORDERS } from '../../data/shopclone7ExtendedData';
 import { formatCurrency } from '../../utils/formatters';
+import { DualStreamChatModal } from './DualStreamChatModal';
 
 interface AdminManualOrdersTabProps {
   currency?: Currency;
@@ -37,6 +39,7 @@ export const AdminManualOrdersTab: React.FC<AdminManualOrdersTabProps> = ({ curr
   const [adminNoteInput, setAdminNoteInput] = useState('');
   const [saveNotice, setSaveNotice] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [activeDualStreamOrder, setActiveDualStreamOrder] = useState<SourcePendingOrder | null>(null);
 
   const filteredOrders = orders.filter(ord => {
     const matchSearch = (ord.orderCode || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -318,6 +321,40 @@ export const AdminManualOrdersTab: React.FC<AdminManualOrdersTabProps> = ({ curr
                   <div className="flex items-center justify-end gap-1.5">
                     <button
                       type="button"
+                      onClick={() => {
+                        const mapped: SourcePendingOrder = {
+                          id: ord.id,
+                          orderCode: ord.orderCode,
+                          customerName: ord.customerName,
+                          productTitle: ord.productTitle,
+                          productType: ord.productType,
+                          retailPrice: ord.totalPrice,
+                          sourceEstimatedCost: Math.round(ord.totalPrice * 0.75),
+                          sourceName: 'Muakey.com',
+                          idempotencyKey: `IDEMP-MAN-${ord.orderCode}`,
+                          status: ord.status === 'completed' ? 'FULFILLED' : 'MANUAL_SUPPORT',
+                          sourceAccountBalance: 85000,
+                          fundsNeeded: 0,
+                          telegramAlertSent: true,
+                          deliveredContent: ord.deliveredContent,
+                          accountDetails: {
+                            uid: ord.orderInputs?.uid,
+                            emailDelivery: ord.orderInputs?.emailDelivery,
+                            accountNote: ord.orderInputs?.notes
+                          },
+                          createdAt: ord.createdAt,
+                          updatedAt: ord.processedAt || ord.createdAt
+                        };
+                        setActiveDualStreamOrder(mapped);
+                      }}
+                      className="p-1.5 rounded-lg bg-cyan-950/80 text-cyan-300 border border-cyan-500/40 hover:bg-cyan-900 cursor-pointer transition-colors"
+                      title="Mở Cầu Chat Song Song (Khách ⟷ Nguồn Muakey)"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5 text-cyan-400" />
+                    </button>
+
+                    <button
+                      type="button"
                       onClick={() => handleOpenProcess(ord)}
                       className={`px-3 py-1.5 rounded-lg font-semibold cursor-pointer flex items-center gap-1.5 text-xs transition-colors ${
                         ord.status === 'completed'
@@ -456,6 +493,35 @@ export const AdminManualOrdersTab: React.FC<AdminManualOrdersTabProps> = ({ curr
             </form>
           </div>
         </div>
+      )}
+
+      {/* Dual Stream Chat Support Bridge */}
+      {activeDualStreamOrder && (
+        <DualStreamChatModal
+          isOpen={true}
+          onClose={() => setActiveDualStreamOrder(null)}
+          order={activeDualStreamOrder}
+          currency={currency as any}
+          onSendMessage={(stream, sender, text) => {
+            console.log('Dual-stream msg:', stream, sender, text);
+          }}
+          onFulfillOrder={(orderId, deliveredKey) => {
+            setOrders(prev => prev.map(o => {
+              if (o.id === orderId) {
+                return {
+                  ...o,
+                  status: 'completed',
+                  deliveredContent: deliveredKey,
+                  processedAt: new Date().toLocaleTimeString('vi-VN')
+                };
+              }
+              return o;
+            }));
+            setSaveNotice(`✅ Đã bàn giao xong đơn qua Cầu Chat Song Song! Key: ${deliveredKey}`);
+            setTimeout(() => setSaveNotice(null), 4000);
+            setActiveDualStreamOrder(null);
+          }}
+        />
       )}
     </div>
   );

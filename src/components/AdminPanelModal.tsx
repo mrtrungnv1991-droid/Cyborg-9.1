@@ -20,7 +20,11 @@ import {
   FileText, 
   TrendingUp, 
   Lock,
-  Layout
+  Layout,
+  Bot,
+  Zap,
+  Cpu,
+  CheckCircle2
 } from 'lucide-react';
 import { 
   Product, 
@@ -47,6 +51,7 @@ import { AdminMembersTab } from './admin/AdminMembersTab';
 import { AdminLiveChatTab } from './admin/AdminLiveChatTab';
 import { AdminTicketsTab } from './admin/AdminTicketsTab';
 import { AdminSuppliersTab } from './admin/AdminSuppliersTab';
+import { AdminSourceAutomationTab } from './admin/AdminSourceAutomationTab';
 import { AdminDatabaseSchemaTab } from './admin/AdminDatabaseSchemaTab';
 import { AdminCategoriesTab } from './admin/AdminCategoriesTab';
 import { AdminManualOrdersTab } from './admin/AdminManualOrdersTab';
@@ -63,6 +68,8 @@ import { AdminGiftUpExchangeTab } from './admin/AdminGiftUpExchangeTab';
 import { AdminSettingsTab } from './admin/AdminSettingsTab';
 import { AdminAuditSecurityTab } from './admin/AdminAuditSecurityTab';
 import { AdminHeroLayoutTab } from './admin/AdminHeroLayoutTab';
+import { AdminSourceConnectorTab } from './admin/AdminSourceConnectorTab';
+import { AdminOrderReliabilityTab } from './admin/AdminOrderReliabilityTab';
 
 export type AdminTabType =
   | 'dashboard'
@@ -82,6 +89,9 @@ export type AdminTabType =
   | 'automation_cron'
   | 'logs'
   | 'suppliers'
+  | 'source_connector'
+  | 'source_automation'
+  | 'order_reliability'
   | 'affiliate'
   | 'giftup_admin'
   | 'settings'
@@ -215,6 +225,9 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     { id: 'automation_cron', label: 'Cron Jobs & Auto Sync', icon: Clock },
     { id: 'logs', label: 'System Logs', icon: FileText },
     { id: 'suppliers', label: 'Supplier APIs', icon: Server, badge: suppliers.length },
+    { id: 'source_connector', label: 'Source Accounts & Web Scanner', icon: Cpu, badge: 'No-API' },
+    { id: 'source_automation', label: 'Nguồn Mua & Telegram (Phương Án B)', icon: Bot, badge: 'Zero-Drop' },
+    { id: 'order_reliability', label: 'Đơn Hàng Đáng Tin Cậy & Key Vault', icon: CheckCircle2, badge: 'Anti-Duplicate' },
     { id: 'affiliate', label: t('nav.reseller_api'), icon: Share2 },
     { id: 'giftup_admin', label: 'GiftUp Cards', icon: Gift },
     { id: 'settings', label: t('nav.admin_panel') + ' Settings', icon: Settings },
@@ -429,6 +442,18 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                 currency={currency}
                 onUpdateSupplierBalance={onUpdateSupplierBalance}
               />
+            )}
+
+            {activeTab === 'source_connector' && (
+              <AdminSourceConnectorTab currency={currency} />
+            )}
+
+            {activeTab === 'source_automation' && (
+              <AdminSourceAutomationTab currency={currency} />
+            )}
+
+            {activeTab === 'order_reliability' && (
+              <AdminOrderReliabilityTab currency={currency} />
             )}
 
             {activeTab === 'affiliate' && (
