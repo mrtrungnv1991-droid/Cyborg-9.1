@@ -37,19 +37,19 @@ export const AdminDashboardTab: React.FC<AdminDashboardTabProps> = ({
     <div className="space-y-6">
       {/* ShopClone7 System Architecture Telemetry Strip */}
       <div className="p-4 rounded-xl bg-gradient-to-r from-[#0c1322] via-[#0f172a] to-[#0c1322] border border-cyan-500/30 shadow-[0_0_25px_rgba(6,182,212,0.15)] space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-cyan-950 border border-cyan-500/40 text-cyan-400">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-cyan-950 border border-cyan-500/40 text-cyan-400 flex items-center justify-center shrink-0">
               <HardDrive className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-xs font-black font-mono text-white tracking-wide flex items-center gap-2">
-                <span>SHOPCLONE7 // KIẾN TRÚC HỆ THỐNG & TÀI NGUYÊN TOÀN DIỆN</span>
-                <span className="px-2 py-0.5 rounded text-[9px] bg-emerald-950 text-emerald-300 border border-emerald-500/40 uppercase">
-                  Clean Clone v7.4.2
+              <div className="text-xs font-bold text-white tracking-wide flex items-center gap-2">
+                <span className="font-sans font-bold text-slate-100">Dashboard</span>
+                <span className="px-2 py-0.5 rounded text-[9px] bg-emerald-950 text-emerald-300 border border-emerald-500/40 uppercase font-mono font-medium">
+                  v7.4.2
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 font-mono">
+              <p className="text-[11px] text-slate-400 font-mono mt-0.5">
                 Xác thực toàn vẹn 18.7K Files • 388 PHP Core • 64 Database Tables • 121 Games (1.702 Tiers)
               </p>
             </div>
@@ -57,9 +57,9 @@ export const AdminDashboardTab: React.FC<AdminDashboardTabProps> = ({
 
           <button
             onClick={() => onNavigateToTab('database_schema')}
-            className="px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-black font-mono text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-md"
+            className="px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-black font-sans text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-md shrink-0 self-start sm:self-auto"
           >
-            <Database className="w-3.5 h-3.5" />
+            <Database className="w-3.5 h-3.5 shrink-0" />
             <span>Xem 64 Bảng SQL</span>
           </button>
         </div>
@@ -93,48 +93,76 @@ export const AdminDashboardTab: React.FC<AdminDashboardTabProps> = ({
 
       {/* Metric Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
-          <div className="text-[11px] text-slate-400 flex items-center justify-between">
-            <span>Tổng GMV Giao Dịch</span>
-            <TrendingUp className="w-4 h-4 text-cyan-400" />
+        <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700/80 transition-all flex flex-col justify-between">
+          <div className="flex items-center justify-between gap-2.5 mb-2">
+            <span className="text-xs font-medium text-slate-300 leading-normal">Tổng GMV Giao Dịch</span>
+            <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 shrink-0">
+              <TrendingUp className="w-4 h-4 shrink-0" />
+            </div>
           </div>
-          <div className="text-lg font-bold text-cyan-300">
-            {formatCurrency(totalGMV, currency)}
+          <div>
+            <div className="text-xl font-bold font-mono text-cyan-300 tracking-tight leading-tight">
+              {formatCurrency(totalGMV, currency)}
+            </div>
+            <div className="text-[10px] text-emerald-400 mt-1 font-sans flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
+              +24.5% tăng trưởng
+            </div>
           </div>
-          <div className="text-[10px] text-emerald-400">+24.5% tăng trưởng</div>
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
-          <div className="text-[11px] text-slate-400 flex items-center justify-between">
-            <span>Tiền Tạm Giữ Escrow</span>
-            <Lock className="w-4 h-4 text-amber-400" />
+        <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700/80 transition-all flex flex-col justify-between">
+          <div className="flex items-center justify-between gap-2.5 mb-2">
+            <span className="text-xs font-medium text-slate-300 leading-normal">Tiền Tạm Giữ Escrow</span>
+            <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+              <Lock className="w-4 h-4 shrink-0" />
+            </div>
           </div>
-          <div className="text-lg font-bold text-amber-300">
-            {formatCurrency(totalEscrowLocked, currency)}
+          <div>
+            <div className="text-xl font-bold font-mono text-amber-300 tracking-tight leading-tight">
+              {formatCurrency(totalEscrowLocked, currency)}
+            </div>
+            <div className="text-[10px] text-slate-400 mt-1 font-sans flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400/80 inline-block"></span>
+              Bảo lãnh trung gian 100%
+            </div>
           </div>
-          <div className="text-[10px] text-slate-400">Bảo lãnh trung gian 100%</div>
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
-          <div className="text-[11px] text-slate-400 flex items-center justify-between">
-            <span>Tổng Số Dư Thành Viên</span>
-            <Users className="w-4 h-4 text-blue-400" />
+        <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700/80 transition-all flex flex-col justify-between">
+          <div className="flex items-center justify-between gap-2.5 mb-2">
+            <span className="text-xs font-medium text-slate-300 leading-normal">Tổng Số Dư Thành Viên</span>
+            <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
+              <Users className="w-4 h-4 shrink-0" />
+            </div>
           </div>
-          <div className="text-lg font-bold text-blue-300">
-            {formatCurrency(totalUserBalance, currency)}
+          <div>
+            <div className="text-xl font-bold font-mono text-blue-300 tracking-tight leading-tight">
+              {formatCurrency(totalUserBalance, currency)}
+            </div>
+            <div className="text-[10px] text-slate-400 mt-1 font-sans flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-400/80 inline-block"></span>
+              {members.length} tài khoản thành viên
+            </div>
           </div>
-          <div className="text-[10px] text-slate-400">{members.length} tài khoản thành viên</div>
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
-          <div className="text-[11px] text-slate-400 flex items-center justify-between">
-            <span>Số Dư API Kho Suppliers</span>
-            <Server className="w-4 h-4 text-purple-400" />
+        <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700/80 transition-all flex flex-col justify-between">
+          <div className="flex items-center justify-between gap-2.5 mb-2">
+            <span className="text-xs font-medium text-slate-300 leading-normal">Số Dư API Kho Suppliers</span>
+            <div className="w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 shrink-0">
+              <Server className="w-4 h-4 shrink-0" />
+            </div>
           </div>
-          <div className="text-lg font-bold text-purple-300">
-            {formatCurrency(153000000, currency)}
+          <div>
+            <div className="text-xl font-bold font-mono text-purple-300 tracking-tight leading-tight">
+              {formatCurrency(153000000, currency)}
+            </div>
+            <div className="text-[10px] text-emerald-400 mt-1 font-sans flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
+              Midasbuy / TheSieuRe Sync
+            </div>
           </div>
-          <div className="text-[10px] text-emerald-400">Midasbuy / TheSieuRe Sync</div>
         </div>
       </div>
 
@@ -143,8 +171,8 @@ export const AdminDashboardTab: React.FC<AdminDashboardTabProps> = ({
         {/* Deposit Channels Breakdown */}
         <div className="lg:col-span-6 p-4 rounded-xl bg-slate-900/40 border border-slate-800 space-y-3">
           <div className="flex items-center justify-between">
-            <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
-              <CreditCard className="w-4 h-4 text-cyan-400" />
+            <h4 className="text-xs font-bold text-white flex items-center gap-2">
+              <CreditCard className="w-4 h-4 text-cyan-400 shrink-0" />
               <span>TỶ LỆ NẠP TIỀN QUA CÁC CỔNG (SHOPCLONE7)</span>
             </h4>
             <span className="text-[10px] text-emerald-400">Hôm nay</span>
@@ -195,8 +223,8 @@ export const AdminDashboardTab: React.FC<AdminDashboardTabProps> = ({
 
         {/* Top Selling Products */}
         <div className="lg:col-span-6 p-4 rounded-xl bg-slate-900/40 border border-slate-800 space-y-3">
-          <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
-            <Flame className="w-4 h-4 text-red-400" />
+          <h4 className="text-xs font-bold text-white flex items-center gap-2">
+            <Flame className="w-4 h-4 text-red-400 shrink-0" />
             <span>TOP SẢN PHẨM BÁN CHẠY NHẤT</span>
           </h4>
 

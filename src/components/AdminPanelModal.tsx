@@ -48,8 +48,7 @@ import { useTranslation } from '../i18n';
 import { AdminDashboardTab } from './admin/AdminDashboardTab';
 import { AdminProductsTab } from './admin/AdminProductsTab';
 import { AdminMembersTab } from './admin/AdminMembersTab';
-import { AdminLiveChatTab } from './admin/AdminLiveChatTab';
-import { AdminTicketsTab } from './admin/AdminTicketsTab';
+import { AdminSupportHubTab } from './admin/AdminSupportHubTab';
 import { AdminSuppliersTab } from './admin/AdminSuppliersTab';
 import { AdminSourceAutomationTab } from './admin/AdminSourceAutomationTab';
 import { AdminDatabaseSchemaTab } from './admin/AdminDatabaseSchemaTab';
@@ -208,7 +207,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   const totalUserBalance = members.reduce((sum, m) => sum + m.walletBalance, 0);
 
   const navTabs: { id: AdminTabType; label: string; icon: React.ComponentType<{ className?: string }>; badge?: string | number }[] = [
-    { id: 'dashboard', label: t('nav.admin_panel') + ' (Telemetry)', icon: TrendingUp },
+    { id: 'dashboard', label: 'Dashboard', icon: TrendingUp },
     { id: 'hero_layout', label: 'Hero Layout & Banner', icon: Layout, badge: 'UI' },
     { id: 'products', label: t('nav.products'), icon: ShoppingBag, badge: products.length },
     { id: 'categories', label: t('nav.categories'), icon: Layers, badge: categories?.length },
@@ -216,10 +215,14 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     { id: 'vouchers', label: 'Vouchers & Coupons', icon: Tag, badge: vouchers?.length },
     { id: 'banking', label: t('nav.banking_topup'), icon: CreditCard, badge: topupInvoices?.filter(i => i.status === 'pending').length },
     { id: 'members', label: t('nav.account_profile'), icon: Users, badge: members.length },
-    { id: 'livechat', label: t('nav.support_hub'), icon: MessageSquare, badge: chatSessions.length },
+    {
+      id: 'tickets',
+      label: t('nav.support_hub'),
+      icon: LifeBuoy,
+      badge: (tickets.filter(t => t.status === 'open').length + chatSessions.length) || undefined
+    },
     { id: 'escrow_orders', label: t('nav.escrow_pools'), icon: Lock, badge: orders.length },
     { id: 'games', label: t('nav.game_topup'), icon: Gamepad2, badge: `${games.length} Games` },
-    { id: 'tickets', label: t('nav.support_hub'), icon: LifeBuoy, badge: tickets.filter(t => t.status === 'open').length },
     { id: 'roles', label: 'Roles & Sub-Admin', icon: ShieldCheck },
     { id: 'security_ip', label: 'Security Firewall & IP WAF', icon: ShieldAlert },
     { id: 'automation_cron', label: 'Cron Jobs & Auto Sync', icon: Clock },
@@ -236,8 +239,8 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-md">
-      <div className="bg-[#080d1a] border border-cyan-500/40 rounded-2xl w-full max-w-7xl max-h-[95vh] flex flex-col shadow-[0_0_50px_rgba(6,182,212,0.18)] overflow-hidden font-sans">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-1 sm:p-3 md:p-4 bg-black/85 backdrop-blur-md">
+      <div className="bg-[#080d1a] border border-cyan-500/40 rounded-2xl w-full max-w-[98vw] 2xl:max-w-7xl max-h-[96vh] flex flex-col shadow-[0_0_50px_rgba(6,182,212,0.18)] overflow-hidden font-sans">
         {/* Admin Header */}
         <div className="p-4 bg-slate-950 border-b border-slate-800 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
@@ -270,7 +273,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
         {/* Admin Workspace Layout */}
         <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
           {/* Navigation Sidebar / Mobile Tab Bar */}
-          <div className="w-full md:w-64 bg-slate-950/90 border-b md:border-b-0 md:border-r border-slate-800/80 p-2 md:p-2.5 flex md:flex-col overflow-x-auto md:overflow-y-auto shrink-0 gap-1 md:space-y-1 scrollbar-thin">
+          <div className="w-full md:w-56 lg:w-60 bg-slate-950/90 border-b md:border-b-0 md:border-r border-slate-800/80 p-2 md:p-2.5 flex md:flex-col overflow-x-auto md:overflow-y-auto shrink-0 gap-1 md:space-y-1 scrollbar-thin">
             {navTabs.map(tab => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -305,7 +308,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
           </div>
 
           {/* Tab Content Display Viewport */}
-          <div className="flex-1 p-3 sm:p-5 md:p-6 overflow-y-auto bg-[#070b14]/70">
+          <div className="flex-1 min-w-0 p-3 sm:p-5 md:p-6 overflow-y-auto bg-[#070b14]/70">
             {activeTab === 'dashboard' && (
               <AdminDashboardTab
                 products={products}
@@ -380,10 +383,13 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
               />
             )}
 
-            {activeTab === 'livechat' && (
-              <AdminLiveChatTab
+            {(activeTab === 'tickets' || activeTab === 'livechat') && (
+              <AdminSupportHubTab
                 chatSessions={chatSessions}
+                tickets={tickets}
                 onAdminSendChatMessage={onAdminSendChatMessage}
+                onAdminReplyTicket={onAdminReplyTicket}
+                defaultSubTab={activeTab === 'livechat' ? 'livechat' : 'tickets'}
               />
             )}
 
@@ -407,13 +413,6 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                 onUpdateGameTier={onUpdateGameTier}
                 onDeleteGameTier={onDeleteGameTier}
                 onBulkAdjustGamePrices={onBulkAdjustGamePrices}
-              />
-            )}
-
-            {activeTab === 'tickets' && (
-              <AdminTicketsTab
-                tickets={tickets}
-                onAdminReplyTicket={onAdminReplyTicket}
               />
             )}
 

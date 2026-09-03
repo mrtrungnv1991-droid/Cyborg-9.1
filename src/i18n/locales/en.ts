@@ -75,7 +75,7 @@ export const en = {
     "orders": "My Orders",
     "products": "Digital Products & Keys",
     "reseller_api": "Reseller API Integration",
-    "support_hub": "Support & Tickets",
+    "support_hub": "Support & Complaints Hub",
     "topup": "Quick Deposit",
     "vault": "Key Vault & Licenses",
     "wallet": "Digital Wallet",

@@ -248,28 +248,29 @@ export const AdminManualOrdersTab: React.FC<AdminManualOrdersTabProps> = ({ curr
       </div>
 
       {/* Orders Table */}
-      <div className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/60">
+      <div className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/60 scrollbar-thin">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
-            <tr className="bg-slate-900/90 text-slate-400 border-b border-slate-800 uppercase text-[11px] font-semibold tracking-wider">
-              <th className="py-3 px-4 whitespace-nowrap w-44">Mã Đơn / Thời Gian</th>
-              <th className="py-3 px-4 whitespace-nowrap w-40">Khách Hàng</th>
-              <th className="py-3 px-4 min-w-[200px]">Phân Loại & Sản Phẩm</th>
-              <th className="py-3 px-4 min-w-[220px]">Thông Tin Đầu Vào (UID / Email)</th>
-              <th className="py-3 px-4 whitespace-nowrap w-32">Tổng Tiền</th>
-              <th className="py-3 px-4 whitespace-nowrap w-36">Trạng Thái</th>
-              <th className="py-3 px-4 whitespace-nowrap w-32 text-right">Thao Tác</th>
+            <tr className="bg-slate-900/90 text-slate-400 border-b border-slate-800 uppercase text-[10px] font-bold tracking-wider">
+              <th className="py-3 px-3 whitespace-nowrap w-36">Mã Đơn / Ngày</th>
+              <th className="py-3 px-3 whitespace-nowrap w-36">Khách Hàng</th>
+              <th className="py-3 px-3 min-w-[160px]">Sản Phẩm & Phân Loại</th>
+              <th className="py-3 px-3 min-w-[210px]">Thông Tin Đầu Vào (UID / Email / Ghi Chú)</th>
+              <th className="py-3 px-3 whitespace-nowrap w-28 text-right">Tổng Tiền</th>
+              <th className="py-3 px-3 whitespace-nowrap w-28 text-center">Trạng Thái</th>
+              <th className="py-3 px-3 whitespace-nowrap w-32 text-center">Thao Tác</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-800/60">
             {filteredOrders.map((ord) => (
               <tr key={ord.id} className="hover:bg-slate-900/40 transition-colors">
-                <td className="py-3 px-4">
+                <td className="py-3 px-3 align-top">
                   <div className="font-semibold text-amber-400 font-mono text-xs flex items-center gap-1">
                     <span>{ord.orderCode}</span>
                     <button
                       onClick={() => copyToClipboard(ord.orderCode, ord.id)}
                       className="text-slate-500 hover:text-white p-0.5 transition-colors"
+                      title="Sao chép mã đơn"
                     >
                       {copiedId === ord.id ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                     </button>
@@ -277,48 +278,66 @@ export const AdminManualOrdersTab: React.FC<AdminManualOrdersTabProps> = ({ curr
                   <div className="text-[11px] text-slate-400 font-mono mt-0.5">{ord.createdAt}</div>
                 </td>
 
-                <td className="py-3 px-4">
+                <td className="py-3 px-3 align-top">
                   <div className="font-semibold text-white">{ord.customerName}</div>
                   {ord.customerContact && (
-                    <div className="text-[11px] text-slate-400 font-mono mt-0.5">{ord.customerContact}</div>
+                    <div className="text-[11px] text-slate-400 font-mono mt-0.5 break-all">{ord.customerContact}</div>
                   )}
                 </td>
 
-                <td className="py-3 px-4">
-                  <div className="flex items-center gap-1.5">
-                    {getTypeIcon(ord.productType)}
-                    <span className="font-semibold text-slate-200">{ord.productTitle}</span>
+                <td className="py-3 px-3 align-top">
+                  <div className="flex items-start gap-1.5">
+                    <div className="mt-0.5 shrink-0">{getTypeIcon(ord.productType)}</div>
+                    <div>
+                      <span className="font-semibold text-slate-200 leading-snug">{ord.productTitle}</span>
+                      <div className="text-[11px] text-slate-400 mt-1">
+                        Phân loại: <span className="text-cyan-400 font-medium">{getTypeLabel(ord.productType)}</span> (x{ord.quantity})
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-[11px] text-slate-400 mt-0.5">
-                    Phân loại: <span className="text-cyan-400 font-medium">{getTypeLabel(ord.productType)}</span> (x{ord.quantity})
+                </td>
+
+                <td className="py-3 px-3 align-top">
+                  <div className="space-y-1">
+                    {ord.orderInputs.uid && (
+                      <div className="text-xs">
+                        <span className="text-slate-400">UID: </span>
+                        <span className="font-semibold text-amber-300 font-mono select-all">{ord.orderInputs.uid}</span>
+                        {ord.orderInputs.server && (
+                          <span className="text-slate-400 ml-1">({ord.orderInputs.server})</span>
+                        )}
+                      </div>
+                    )}
+                    {ord.orderInputs.characterName && (
+                      <div className="text-[11px] text-slate-300">
+                        <span className="text-slate-400">Tên NV: </span>
+                        <span className="font-medium text-white">{ord.orderInputs.characterName}</span>
+                      </div>
+                    )}
+                    {ord.orderInputs.emailDelivery && (
+                      <div className="text-[11px] text-cyan-300 font-mono break-all select-all">
+                        <span className="text-slate-400 font-sans">Email: </span>
+                        {ord.orderInputs.emailDelivery}
+                      </div>
+                    )}
+                    {ord.orderInputs.notes && (
+                      <div className="text-[11px] text-slate-300 bg-slate-900/80 border border-slate-800 rounded px-2 py-1 mt-1 break-words leading-relaxed">
+                        <span className="text-amber-400 font-medium">Ghi chú:</span> "{ord.orderInputs.notes}"
+                      </div>
+                    )}
                   </div>
                 </td>
 
-                <td className="py-3 px-4">
-                  {ord.orderInputs.uid && (
-                    <div>UID: <span className="font-semibold text-amber-300 font-mono">{ord.orderInputs.uid}</span> {ord.orderInputs.server ? `(${ord.orderInputs.server})` : ''}</div>
-                  )}
-                  {ord.orderInputs.characterName && (
-                    <div className="text-[11px] text-slate-400">Tên NV: {ord.orderInputs.characterName}</div>
-                  )}
-                  {ord.orderInputs.emailDelivery && (
-                    <div className="text-[11px] text-cyan-400">Email: {ord.orderInputs.emailDelivery}</div>
-                  )}
-                  {ord.orderInputs.notes && (
-                    <div className="text-[11px] text-slate-400 italic max-w-xs truncate">Note: "{ord.orderInputs.notes}"</div>
-                  )}
-                </td>
-
-                <td className="py-3 px-4 font-bold text-emerald-400 font-mono">
+                <td className="py-3 px-3 font-bold text-emerald-400 font-mono align-top text-right whitespace-nowrap">
                   {formatCurrency(ord.totalPrice, currency)}
                 </td>
 
-                <td className="py-3 px-4 whitespace-nowrap">
+                <td className="py-3 px-3 whitespace-nowrap align-top text-center">
                   {getStatusBadge(ord.status)}
                 </td>
 
-                <td className="py-3 px-4 text-right whitespace-nowrap">
-                  <div className="flex items-center justify-end gap-1.5">
+                <td className="py-3 px-3 text-center whitespace-nowrap align-top">
+                  <div className="flex items-center justify-center gap-1.5">
                     <button
                       type="button"
                       onClick={() => {
@@ -356,21 +375,21 @@ export const AdminManualOrdersTab: React.FC<AdminManualOrdersTabProps> = ({ curr
                     <button
                       type="button"
                       onClick={() => handleOpenProcess(ord)}
-                      className={`px-3 py-1.5 rounded-lg font-semibold cursor-pointer flex items-center gap-1.5 text-xs transition-colors ${
+                      className={`px-2.5 py-1.5 rounded-lg font-semibold cursor-pointer flex items-center gap-1 text-xs transition-colors ${
                         ord.status === 'completed'
                           ? 'bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800'
                           : 'bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-md font-bold'
                       }`}
                     >
-                      <Send className="w-3.5 h-3.5" />
-                      <span>{ord.status === 'completed' ? 'Xem Bàn Giao' : 'Duyệt & Giao'}</span>
+                      <Send className="w-3 h-3" />
+                      <span>{ord.status === 'completed' ? 'Chi Tiết' : 'Xử Lý'}</span>
                     </button>
 
                     {ord.status !== 'refunded' && ord.status !== 'completed' && (
                       <button
                         type="button"
                         onClick={() => handleRefundOrder(ord)}
-                        className="p-1 rounded bg-rose-950 text-rose-400 border border-rose-500/30 hover:bg-rose-900 cursor-pointer"
+                        className="p-1.5 rounded-lg bg-rose-950 text-rose-400 border border-rose-500/30 hover:bg-rose-900 cursor-pointer transition-colors"
                         title="Hủy đơn & Hoàn tiền ví"
                       >
                         <RotateCcw className="w-3.5 h-3.5" />

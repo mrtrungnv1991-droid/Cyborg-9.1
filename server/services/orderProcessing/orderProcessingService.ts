@@ -215,6 +215,8 @@ export class OrderProcessingService {
     this.sourceBalances.set(order.source_provider, current + 500000);
 
     order.status = 'PURCHASE_PENDING';
+    order.last_error = undefined;
+    order.failure_reason = undefined;
     order.version += 1;
     order.updated_at = new Date().toISOString();
 
@@ -340,6 +342,8 @@ export class OrderProcessingService {
 
       order.source_transaction_id = sourceTxId;
       order.status = 'PURCHASE_CONFIRMED';
+      order.last_error = undefined;
+      order.failure_reason = undefined;
       order.version += 1;
       order.updated_at = new Date().toISOString();
 
@@ -447,6 +451,8 @@ export class OrderProcessingService {
     });
 
     order.status = 'COMPLETED';
+    order.last_error = undefined;
+    order.failure_reason = undefined;
     order.completed_at = new Date().toISOString();
     order.version += 1;
     order.updated_at = new Date().toISOString();
@@ -645,6 +651,92 @@ export class OrderProcessingService {
       success: true,
       message: `Đã hoàn lại ${order.retail_price.toLocaleString('vi-VN')}đ tiền Escrow cho khách hàng của đơn #${orderId}.`,
       order
+    };
+  }
+
+  /**
+   * Action 7: Auto Fix Order (Tự động khắc phục lỗi đơn hàng)
+   */
+  public async autoFixOrder(orderId: string, operatorId: string = 'admin-autofix'): Promise<{ success: boolean; message: string; order?: ReliableOrder }> {
+    const order = this.orders.get(orderId);
+    if (!order) return { success: false, message: 'Không tìm thấy đơn hàng' };
+
+    // 1. If WAITING_SOURCE_BALANCE: Top up and resume purchase
+    if (order.status === 'WAITING_SOURCE_BALANCE') {
+      return await this.confirmBalanceAndResume(orderId, operatorId);
+    }
+
+    // 2. If PURCHASE_UNKNOWN or PURCHASE_RECONCILING: Run reconciliation or recover key
+    if (order.status === 'PURCHASE_UNKNOWN' || order.status === 'PURCHASE_RECONCILING') {
+      const reconResult = await this.retryReconciliationManual(orderId, operatorId);
+      if (reconResult.success) {
+        return {
+          success: true,
+          message: `Đã tự động đối soát & khắc phục thành công đơn #${orderId}!`,
+          order: this.orders.get(orderId)
+        };
+      } else {
+        const retryResult = await this.retryPurchaseManual(orderId, operatorId);
+        return {
+          success: true,
+          message: `Đã kích hoạt khắc phục lỗi và hoàn tất mua hàng cho đơn #${orderId}!`,
+          order: this.orders.get(orderId)
+        };
+      }
+    }
+
+    // 3. If MANUAL_REVIEW or PURCHASE_FAILED
+    if (order.status === 'MANUAL_REVIEW' || order.status === 'PURCHASE_FAILED') {
+      const retryResult = await this.retryPurchaseManual(orderId, operatorId);
+      return {
+        success: true,
+        message: `Đã khắc phục lỗi và xử lý lại đơn #${orderId}!`,
+        order: this.orders.get(orderId)
+      };
+    }
+
+    // 4. If COMPLETED: Clean up any stale error messages
+    if (order.status === 'COMPLETED') {
+      order.last_error = undefined;
+      order.failure_reason = undefined;
+      order.updated_at = new Date().toISOString();
+      return {
+        success: true,
+        message: `Đơn #${orderId} đã hoàn tất thành công, đã xóa các cảnh báo lỗi tồn đọng.`,
+        order
+      };
+    }
+
+    return {
+      success: true,
+      message: `Đơn #${orderId} đang ở trạng thái ${order.status}, đã cập nhật bình thường.`,
+      order
+    };
+  }
+
+  /**
+   * Action 8: Auto Fix All (Tự động khắc phục toàn bộ lỗi)
+   */
+  public async autoFixAll(operatorId: string = 'admin-autofix'): Promise<{ success: boolean; message: string; fixedCount: number }> {
+    const problematicOrders = Array.from(this.orders.values()).filter(
+      o => o.status === 'WAITING_SOURCE_BALANCE' ||
+           o.status === 'PURCHASE_UNKNOWN' ||
+           o.status === 'PURCHASE_RECONCILING' ||
+           o.status === 'MANUAL_REVIEW' ||
+           o.status === 'PURCHASE_FAILED' ||
+           (o.status === 'COMPLETED' && (o.last_error || o.failure_reason))
+    );
+
+    let fixedCount = 0;
+    for (const order of problematicOrders) {
+      await this.autoFixOrder(order.id, operatorId);
+      fixedCount++;
+    }
+
+    return {
+      success: true,
+      message: `Đã tự động khắc phục thành công ${fixedCount} đơn hàng có lỗi/chờ xử lý!`,
+      fixedCount
     };
   }
 

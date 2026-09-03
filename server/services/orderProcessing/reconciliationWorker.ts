@@ -120,6 +120,8 @@ export class PurchaseReconciliationWorker {
       if (matchedTx) {
         order.source_transaction_id = matchedTx.id;
         order.status = 'PURCHASE_CONFIRMED';
+        order.last_error = undefined;
+        order.failure_reason = undefined;
         order.updated_at = new Date().toISOString();
 
         updateOrder(order, 'SOURCE_PURCHASE_CONFIRMED', {

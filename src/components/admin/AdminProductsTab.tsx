@@ -15,7 +15,10 @@ import {
   RefreshCw,
   Sparkles,
   Layers,
-  CheckCircle2
+  CheckCircle2,
+  Upload,
+  Image as ImageIcon,
+  Laptop
 } from 'lucide-react';
 import { Product, ProductCategory, CurrencyCode } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
@@ -91,6 +94,60 @@ export const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
     isFlashSale: false,
     discountPercent: 20
   });
+
+  // Direct PC Image Upload State & Handlers
+  const [imageUploadMode, setImageUploadMode] = useState<'pc' | 'url'>('pc');
+  const [dragOver, setDragOver] = useState(false);
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+  const [uploadedFileSize, setUploadedFileSize] = useState<string | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleProcessImageFile = (file: File) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('Vui lòng chọn định dạng hình ảnh hợp lệ (PNG, JPG, WEBP, GIF, SVG).');
+      return;
+    }
+
+    const sizeFormatted = file.size > 1024 * 1024 
+      ? `${(file.size / (1024 * 1024)).toFixed(2)} MB` 
+      : `${Math.round(file.size / 1024)} KB`;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const result = event.target?.result as string;
+      if (result) {
+        setNewProdForm(prev => ({ ...prev, bannerImg: result }));
+        setUploadedFileName(file.name);
+        setUploadedFileSize(sizeFormatted);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      handleProcessImageFile(e.target.files[0]);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragOver(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleProcessImageFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragOver(false);
+  };
 
   // Sale & Discount % Modal Sub-state
   const [selectedProductForSale, setSelectedProductForSale] = useState<Product | null>(null);
@@ -202,6 +259,11 @@ export const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
     });
 
     setIsAddingProduct(false);
+    setUploadedFileName(null);
+    setUploadedFileSize(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
     setNewProdForm({
       title: '',
       category: 'ai_tools',
@@ -343,15 +405,169 @@ export const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
             </div>
           </div>
 
-          <div className="bg-slate-950/70 p-3 rounded-xl border border-slate-800">
-            <label className="text-[11px] font-bold text-slate-300 block mb-1">URL Ảnh Banner Sản Phẩm:</label>
+          <div className="bg-slate-950/70 p-3.5 rounded-xl border border-slate-800 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-2">
+              <label className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+                <ImageIcon className="w-4 h-4 text-cyan-400" />
+                <span>Ảnh Banner / Thumbnail Sản Phẩm:</span>
+              </label>
+
+              {/* Chuyển đổi nguồn ảnh: Từ PC vs Nhập Link URL */}
+              <div className="flex items-center bg-slate-900 p-0.5 rounded-lg border border-slate-800 text-[11px] self-start sm:self-auto">
+                <button
+                  type="button"
+                  onClick={() => setImageUploadMode('pc')}
+                  className={`px-2.5 py-1 rounded-md font-medium transition-all flex items-center gap-1 cursor-pointer ${
+                    imageUploadMode === 'pc'
+                      ? 'bg-cyan-500 text-black font-bold shadow-sm'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <Laptop className="w-3 h-3" />
+                  <span>Tải ảnh từ PC</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setImageUploadMode('url')}
+                  className={`px-2.5 py-1 rounded-md font-medium transition-all flex items-center gap-1 cursor-pointer ${
+                    imageUploadMode === 'url'
+                      ? 'bg-cyan-500 text-black font-bold shadow-sm'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <Globe className="w-3 h-3" />
+                  <span>Dán link URL</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Input file ẩn từ máy tính */}
             <input
-              type="text"
-              value={newProdForm.bannerImg}
-              onChange={(e) => setNewProdForm({ ...newProdForm, bannerImg: e.target.value })}
-              placeholder="https://images.unsplash.com/..."
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:border-cyan-400 focus:outline-none font-mono"
+              ref={fileInputRef}
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
+              onChange={handleFileInputChange}
+              className="hidden"
             />
+
+            {/* Chế độ 1: Tải ảnh từ PC (Drag & Drop + Chọn tệp) */}
+            {imageUploadMode === 'pc' ? (
+              <div className="space-y-2.5">
+                <div
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                  className={`border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-2 ${
+                    dragOver
+                      ? 'border-cyan-400 bg-cyan-950/40 text-cyan-300 scale-[1.01]'
+                      : 'border-slate-700 hover:border-cyan-500/60 bg-slate-900/50 hover:bg-slate-900/80 text-slate-300'
+                  }`}
+                >
+                  <div className="w-9 h-9 rounded-full bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                    <Upload className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-semibold text-white">
+                      Kéo thả ảnh vào đây, hoặc <span className="text-cyan-400 underline font-bold">chọn tệp từ PC / máy tính</span>
+                    </div>
+                    <div className="text-[10px] text-slate-400 mt-0.5 font-mono">
+                      Hỗ trợ PNG, JPG, JPEG, WEBP, GIF, SVG (Tự động chuyển đổi hiển thị ngay)
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium flex items-center gap-1.5 cursor-pointer border border-slate-700 transition-colors"
+                  >
+                    <Laptop className="w-3.5 h-3.5 text-cyan-400" />
+                    <span>Duyệt ảnh từ PC...</span>
+                  </button>
+
+                  {uploadedFileName && (
+                    <span className="text-xs text-emerald-400 font-mono flex items-center gap-1">
+                      <Check className="w-3.5 h-3.5" />
+                      <span>{uploadedFileName}</span>
+                      {uploadedFileSize && <span className="text-slate-400">({uploadedFileSize})</span>}
+                    </span>
+                  )}
+                </div>
+              </div>
+            ) : (
+              /* Chế độ 2: Dán link URL ảnh */
+              <div className="space-y-1.5">
+                <input
+                  type="text"
+                  value={newProdForm.bannerImg}
+                  onChange={(e) => {
+                    setNewProdForm({ ...newProdForm, bannerImg: e.target.value });
+                    setUploadedFileName(null);
+                    setUploadedFileSize(null);
+                  }}
+                  placeholder="https://images.unsplash.com/... hoặc link ảnh online"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:border-cyan-400 focus:outline-none font-mono"
+                />
+                <p className="text-[10px] text-slate-400">
+                  Dán link ảnh trực tiếp từ Unsplash, Imgur, Cloudinary, Discord CDN hoặc hosting ảnh của bạn.
+                </p>
+              </div>
+            )}
+
+            {/* Live Image Preview Bar */}
+            {newProdForm.bannerImg && (
+              <div className="flex items-center gap-3 p-2.5 rounded-xl bg-slate-900/90 border border-slate-800">
+                <img
+                  src={newProdForm.bannerImg}
+                  alt="Preview"
+                  className="w-14 h-11 rounded-lg object-cover border border-slate-700 bg-slate-950 shrink-0 shadow-sm"
+                  onError={(e) => {
+                    (e.target as HTMLElement).style.opacity = '0.3';
+                  }}
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[11px] font-bold text-white">Xem trước ảnh đã chọn:</span>
+                    {uploadedFileName ? (
+                      <span className="px-1.5 py-0.5 rounded text-[9px] bg-cyan-950 text-cyan-300 border border-cyan-500/40 font-mono font-medium">
+                        Ảnh từ PC
+                      </span>
+                    ) : (
+                      <span className="px-1.5 py-0.5 rounded text-[9px] bg-slate-800 text-slate-300 font-mono">
+                        URL Online
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-[10px] text-slate-400 truncate font-mono mt-0.5">
+                    {uploadedFileName ? `${uploadedFileName} • ${uploadedFileSize || 'Đã tải'}` : newProdForm.bannerImg}
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] text-cyan-300 font-medium cursor-pointer border border-slate-700 transition-colors"
+                  >
+                    Đổi ảnh PC
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setNewProdForm(prev => ({ ...prev, bannerImg: '' }));
+                      setUploadedFileName(null);
+                      setUploadedFileSize(null);
+                      if (fileInputRef.current) fileInputRef.current.value = '';
+                    }}
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-950/40 cursor-pointer transition-colors"
+                    title="Xóa ảnh"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
@@ -398,11 +614,39 @@ export const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
               {/* Top Row: Info & Main Action Buttons */}
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800/70 pb-3">
                 <div className="flex items-center gap-3 min-w-0">
-                  <img
-                    src={prod.bannerImg}
-                    alt={prod.title}
-                    className="w-12 h-12 rounded-xl object-cover border border-slate-700 shrink-0 shadow-sm"
-                  />
+                  <div className="relative group shrink-0">
+                    <img
+                      src={isEditing ? (productEditForm.bannerImg ?? prod.bannerImg) : prod.bannerImg}
+                      alt={prod.title}
+                      className="w-12 h-12 rounded-xl object-cover border border-slate-700 bg-slate-950 shrink-0 shadow-sm"
+                    />
+                    {isEditing && (
+                      <label 
+                        title="Tải ảnh mới trực tiếp từ PC" 
+                        className="absolute inset-0 bg-black/75 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center rounded-xl cursor-pointer transition-opacity text-white text-center p-0.5"
+                      >
+                        <Upload className="w-3.5 h-3.5 text-cyan-400" />
+                        <span className="text-[8px] font-bold text-cyan-300">Đổi ảnh PC</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                              const file = e.target.files[0];
+                              const reader = new FileReader();
+                              reader.onload = (evt) => {
+                                if (evt.target?.result) {
+                                  setProductEditForm(prev => ({ ...prev, bannerImg: evt.target?.result as string }));
+                                }
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                        />
+                      </label>
+                    )}
+                  </div>
                   
                   {isEditing ? (
                     <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 flex-1">

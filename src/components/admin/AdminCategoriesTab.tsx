@@ -138,15 +138,15 @@ export const AdminCategoriesTab: React.FC = () => {
   const getClassificationBadge = (classification?: string, fulfillment?: string) => {
     switch (classification) {
       case 'account':
-        return <span className="px-2.5 py-1 rounded-md bg-emerald-950 text-emerald-300 border border-emerald-500/30 text-xs font-semibold whitespace-nowrap">Tự Động (Account)</span>;
+        return <span className="inline-flex items-center px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-500/30 text-[11px] font-medium whitespace-nowrap">Tự Động (Account)</span>;
       case 'key_game':
-        return <span className="px-2.5 py-1 rounded-md bg-cyan-950 text-cyan-300 border border-cyan-500/30 text-xs font-semibold whitespace-nowrap">Thủ Công (Key Game)</span>;
+        return <span className="inline-flex items-center px-2 py-0.5 rounded bg-cyan-950/80 text-cyan-300 border border-cyan-500/30 text-[11px] font-medium whitespace-nowrap">Thủ Công (Key Game)</span>;
       case 'gift_card':
-        return <span className="px-2.5 py-1 rounded-md bg-pink-950 text-pink-300 border border-pink-500/30 text-xs font-semibold whitespace-nowrap">Thủ Công (Gift Card)</span>;
+        return <span className="inline-flex items-center px-2 py-0.5 rounded bg-pink-950/80 text-pink-300 border border-pink-500/30 text-[11px] font-medium whitespace-nowrap">Thủ Công (Gift Card)</span>;
       case 'topup_manual':
-        return <span className="px-2.5 py-1 rounded-md bg-amber-950 text-amber-300 border border-amber-500/30 text-xs font-semibold whitespace-nowrap">Thủ Công (Top Up UID)</span>;
+        return <span className="inline-flex items-center px-2 py-0.5 rounded bg-amber-950/80 text-amber-300 border border-amber-500/30 text-[11px] font-medium whitespace-nowrap">Thủ Công (Top Up UID)</span>;
       default:
-        return <span className="px-2.5 py-1 rounded-md bg-slate-800 text-slate-300 text-xs font-semibold whitespace-nowrap">{fulfillment === 'automatic' ? 'Tự Động' : 'Thủ Công'}</span>;
+        return <span className="inline-flex items-center px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[11px] font-medium whitespace-nowrap">{fulfillment === 'automatic' ? 'Tự Động' : 'Thủ Công'}</span>;
     }
   };
 
@@ -210,17 +210,17 @@ export const AdminCategoriesTab: React.FC = () => {
       </div>
 
       {/* Main Table */}
-      <div className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/60">
+      <div className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/60 scrollbar-thin">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
-            <tr className="bg-slate-900/90 text-slate-400 border-b border-slate-800 uppercase text-[11px] font-semibold tracking-wider">
-              <th className="py-3 px-4 w-20 whitespace-nowrap">Thứ Tự</th>
-              <th className="py-3 px-4 whitespace-nowrap">Tên Chuyên Mục & Slug</th>
-              <th className="py-3 px-4 w-44 whitespace-nowrap">Cấp Phân Nhánh</th>
-              <th className="py-3 px-4 w-48 whitespace-nowrap">Phân Loại Giao Hàng</th>
-              <th className="py-3 px-4 text-center w-28 whitespace-nowrap">Sản Phẩm</th>
-              <th className="py-3 px-4 w-32 whitespace-nowrap">Trạng Thái</th>
-              <th className="py-3 px-4 text-right w-28 whitespace-nowrap">Thao Tác</th>
+            <tr className="bg-slate-900/90 text-slate-400 border-b border-slate-800 uppercase text-[10px] font-bold tracking-wider">
+              <th className="py-2.5 px-2 w-12 text-center whitespace-nowrap">#</th>
+              <th className="py-2.5 px-3 text-left whitespace-nowrap min-w-[150px]">Tên Chuyên Mục & Slug</th>
+              <th className="py-2.5 px-2.5 text-left whitespace-nowrap w-36">Cấp Phân Nhánh</th>
+              <th className="py-2.5 px-2.5 text-center whitespace-nowrap w-36">Phân Loại Giao Hàng</th>
+              <th className="py-2.5 px-2 text-center w-16 whitespace-nowrap">Sản Phẩm</th>
+              <th className="py-2.5 px-2 text-center w-24 whitespace-nowrap">Trạng Thái</th>
+              <th className="py-2.5 px-2 text-center w-24 whitespace-nowrap">Thao Tác</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-800/60">
@@ -228,83 +228,84 @@ export const AdminCategoriesTab: React.FC = () => {
               const isRoot = !cat.parentId;
               return (
                 <tr key={cat.id} className={`hover:bg-slate-900/40 transition-colors ${isRoot ? 'bg-slate-900/20' : ''}`}>
-                  <td className="py-3 px-4 font-mono font-bold text-slate-400">
+                  <td className="py-2.5 px-2 text-center font-mono font-bold text-slate-400 align-middle text-xs">
                     #{cat.orderIndex}
                   </td>
-                  <td className="py-3 px-4">
-                    <div className="flex items-center gap-2.5">
-                      <div className={`p-2 rounded-lg border shrink-0 ${isRoot ? 'bg-purple-950/80 border-purple-500/40 text-purple-300' : 'bg-slate-900 border-slate-800 text-slate-400'}`}>
-                        {isRoot ? <FolderTree className="w-4 h-4" /> : <Folder className="w-4 h-4" />}
+                  <td className="py-2.5 px-3 align-middle">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className={`w-7 h-7 rounded-lg border flex items-center justify-center shrink-0 ${isRoot ? 'bg-purple-950/80 border-purple-500/40 text-purple-300' : 'bg-slate-900 border-slate-800 text-slate-400'}`}>
+                        {isRoot ? <FolderTree className="w-3.5 h-3.5" /> : <Folder className="w-3.5 h-3.5" />}
                       </div>
-                      <div>
-                        <div className="font-semibold text-white flex items-center gap-1.5">
-                          {!isRoot && <span className="text-slate-600">↳</span>}
-                          <span>{cat.name}</span>
+                      <div className="min-w-0">
+                        <div className="font-semibold text-white flex items-center gap-1 leading-snug">
+                          {!isRoot && <span className="text-purple-400 font-bold shrink-0 text-xs">↳</span>}
+                          <span className="truncate max-w-[180px] lg:max-w-[240px]" title={cat.name}>{cat.name}</span>
                         </div>
-                        <div className="text-[11px] text-slate-400 font-mono">slug: <span className="text-purple-400">{cat.slug}</span></div>
+                        <div className="text-[10px] text-slate-400 font-mono mt-0.5">slug: <span className="text-purple-400 font-medium">{cat.slug}</span></div>
                       </div>
                     </div>
                   </td>
-                  <td className="py-3 px-4 whitespace-nowrap">
+                  <td className="py-2.5 px-2.5 whitespace-nowrap align-middle">
                     {isRoot ? (
-                      <span className="px-2.5 py-1 rounded-md bg-purple-950 text-purple-300 border border-purple-500/30 text-xs font-semibold whitespace-nowrap">
-                        Nhánh Chính (Root)
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-purple-950/90 text-purple-300 border border-purple-500/30 text-[11px] font-medium whitespace-nowrap">
+                        <span className="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+                        <span>Nhánh Chính</span>
                       </span>
                     ) : (
-                      <div>
-                        <span className="text-slate-400 text-xs">Thuộc: </span>
-                        <span className="text-cyan-400 font-semibold text-xs">{getParentName(cat.parentId)}</span>
+                      <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-[11px] text-slate-300 max-w-[145px]" title={`Thuộc: ${getParentName(cat.parentId)}`}>
+                        <span className="text-purple-400 font-bold shrink-0">↳</span>
+                        <span className="text-cyan-400 font-medium truncate">{getParentName(cat.parentId)}</span>
                       </div>
                     )}
                   </td>
-                  <td className="py-3 px-4 whitespace-nowrap">
+                  <td className="py-2.5 px-2.5 text-center whitespace-nowrap align-middle">
                     {getClassificationBadge(cat.deliveryClassification, cat.fulfillmentType)}
                   </td>
-                  <td className="py-3 px-4 text-center whitespace-nowrap">
-                    <span className="px-2.5 py-1 rounded-md bg-slate-900 border border-slate-800 text-white font-mono font-semibold text-xs">
+                  <td className="py-2.5 px-2 text-center whitespace-nowrap align-middle">
+                    <span className="inline-flex items-center justify-center min-w-[28px] px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-white font-mono font-bold text-xs shadow-sm">
                       {cat.productCount || 0}
                     </span>
                   </td>
-                  <td className="py-3 px-4 whitespace-nowrap">
+                  <td className="py-2.5 px-2 text-center whitespace-nowrap align-middle">
                     {cat.status === 'active' ? (
-                      <span className="text-emerald-400 font-semibold flex items-center gap-1.5 text-xs whitespace-nowrap">
-                        <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                      <span className="inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded bg-emerald-950/70 border border-emerald-500/30 text-emerald-400 font-medium text-[11px] whitespace-nowrap">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                         <span>Hoạt động</span>
                       </span>
                     ) : (
-                      <span className="text-slate-500 font-semibold flex items-center gap-1.5 text-xs whitespace-nowrap">
-                        <span className="w-2 h-2 rounded-full bg-slate-500"></span>
+                      <span className="inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-400 font-medium text-[11px] whitespace-nowrap">
+                        <span className="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
                         <span>Tạm ẩn</span>
                       </span>
                     )}
                   </td>
-                  <td className="py-3 px-4 text-right whitespace-nowrap">
-                    <div className="flex items-center justify-end gap-1.5">
+                  <td className="py-2.5 px-2 text-center whitespace-nowrap align-middle">
+                    <div className="flex items-center justify-center gap-1">
                       {isRoot && (
                         <button
                           type="button"
                           onClick={() => handleOpenCreate(cat.id)}
-                          className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-purple-400 hover:text-purple-300 cursor-pointer transition-colors"
+                          className="p-1.5 rounded-lg bg-slate-900 hover:bg-purple-950/50 border border-slate-800 hover:border-purple-500/50 text-purple-400 hover:text-purple-300 cursor-pointer transition-colors"
                           title="Thêm nhánh phụ con"
                         >
-                          <Plus className="w-4 h-4" />
+                          <Plus className="w-3.5 h-3.5" />
                         </button>
                       )}
                       <button
                         type="button"
                         onClick={() => handleOpenEdit(cat)}
-                        className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-cyan-400 hover:text-cyan-300 cursor-pointer transition-colors"
+                        className="p-1.5 rounded-lg bg-slate-900 hover:bg-cyan-950/50 border border-slate-800 hover:border-cyan-500/50 text-cyan-400 hover:text-cyan-300 cursor-pointer transition-colors"
                         title="Chỉnh sửa"
                       >
-                        <Edit3 className="w-4 h-4" />
+                        <Edit3 className="w-3.5 h-3.5" />
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDelete(cat.id)}
-                        className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-rose-400 hover:text-rose-300 cursor-pointer transition-colors"
+                        className="p-1.5 rounded-lg bg-slate-900 hover:bg-rose-950/50 border border-slate-800 hover:border-rose-500/50 text-rose-400 hover:text-rose-300 cursor-pointer transition-colors"
                         title="Xóa"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </td>

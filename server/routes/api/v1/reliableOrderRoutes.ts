@@ -117,6 +117,20 @@ reliableOrderRouter.post('/reconcile-all', async (req, res) => {
   });
 });
 
+// 9b. Auto Fix single order
+reliableOrderRouter.post('/:id/auto-fix', async (req, res) => {
+  const operatorId = (req.body.operator_id as string) || 'admin-autofix';
+  const result = await orderProcessingService.autoFixOrder(req.params.id, operatorId);
+  res.json(result);
+});
+
+// 9c. Auto Fix all problematic orders
+reliableOrderRouter.post('/fix-all', async (req, res) => {
+  const operatorId = (req.body.operator_id as string) || 'admin-autofix';
+  const result = await orderProcessingService.autoFixAll(operatorId);
+  res.json(result);
+});
+
 // 10. Manual Recovery Actions
 reliableOrderRouter.post('/:id/manual-action', async (req, res) => {
   const { action, raw_key, reason, operator_id } = req.body;

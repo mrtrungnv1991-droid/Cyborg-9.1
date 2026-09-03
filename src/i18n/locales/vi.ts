@@ -75,7 +75,7 @@ export const vi = {
     "orders": "Đơn Hàng Của Tôi",
     "products": "Sản Phẩm & Bản Quyền",
     "reseller_api": "API Tích Hợp Đại Lý",
-    "support_hub": "Trung Tâm Khiếu Nại",
+    "support_hub": "Trung Tâm Khiếu Nại & CSKH",
     "topup": "Nạp Tiền Nhanh",
     "vault": "Kho Key & License",
     "wallet": "Ví Điện Tử",

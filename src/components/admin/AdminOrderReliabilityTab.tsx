@@ -152,6 +152,32 @@ export const AdminOrderReliabilityTab: React.FC<AdminOrderReliabilityTabProps> =
     }
   };
 
+  // 1-Click Auto Fix for single order
+  const handleAutoFixOrder = async (orderId: string) => {
+    setActionNotice(`Đang tự động xử lý & khắc phục lỗi cho đơn #${orderId}...`);
+    try {
+      const res = await fetch(`/api/v1/reliable-orders/${orderId}/auto-fix`, { method: 'POST' });
+      const data = await res.json();
+      setActionNotice(data.message || (data.success ? 'Đã khắc phục thành công!' : 'Thao tác không thành công'));
+      fetchData();
+    } catch (err: any) {
+      setActionNotice(`Lỗi khắc phục: ${err.message}`);
+    }
+  };
+
+  // 1-Click Auto Fix for all problematic orders
+  const handleAutoFixAll = async () => {
+    setActionNotice('Đang tự động kiểm tra và khắc phục toàn bộ đơn hàng có lỗi/chờ xử lý...');
+    try {
+      const res = await fetch('/api/v1/reliable-orders/fix-all', { method: 'POST' });
+      const data = await res.json();
+      setActionNotice(data.message || 'Đã khắc phục xong toàn bộ đơn hàng!');
+      fetchData();
+    } catch (err: any) {
+      setActionNotice(`Lỗi khắc phục: ${err.message}`);
+    }
+  };
+
   // Execute manual recovery action
   const handleManualAction = async (orderId: string, action: string, extraData?: any) => {
     setActionNotice(`Đang thực thi lệnh ${action} cho đơn #${orderId}...`);
@@ -528,14 +554,25 @@ export const AdminOrderReliabilityTab: React.FC<AdminOrderReliabilityTabProps> =
               ))}
             </div>
 
-            <button
-              onClick={fetchData}
-              disabled={loading}
-              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs flex items-center gap-1.5 cursor-pointer"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-              Làm mới dữ liệu
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleAutoFixAll}
+                className="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all cursor-pointer"
+                title="Tự động kiểm tra và khắc phục tất cả các đơn hàng lỗi hoặc chờ nạp tiền"
+              >
+                <Zap className="w-3.5 h-3.5 fill-current" />
+                Khắc Phục Tất Cả Lỗi (Auto-Fix)
+              </button>
+
+              <button
+                onClick={fetchData}
+                disabled={loading}
+                className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs flex items-center gap-1.5 cursor-pointer"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+                Làm mới dữ liệu
+              </button>
+            </div>
           </div>
 
           {/* Orders Table */}
@@ -593,10 +630,24 @@ export const AdminOrderReliabilityTab: React.FC<AdminOrderReliabilityTabProps> =
 
                       <td className="p-3.5">
                         {getStatusBadge(order.status)}
-                        {order.last_error && (
-                          <div className="text-[10px] text-rose-400/90 font-mono mt-1 max-w-xs truncate" title={order.last_error}>
-                            ⚠️ {order.last_error}
+                        {order.status === 'COMPLETED' ? (
+                          <div className="text-[10px] text-emerald-400 font-medium flex items-center gap-1 mt-1">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0" />
+                            Đã giao an toàn & hoàn tất
                           </div>
+                        ) : (
+                          <>
+                            {order.last_error && (
+                              <div className="text-[10px] text-rose-400/90 font-mono mt-1 max-w-xs truncate flex items-center gap-1" title={order.last_error}>
+                                ⚠️ {order.last_error}
+                              </div>
+                            )}
+                            {order.failure_reason && !order.last_error && (
+                              <div className="text-[10px] text-amber-400/90 font-mono mt-1 max-w-xs truncate flex items-center gap-1" title={order.failure_reason}>
+                                ⚠️ {order.failure_reason}
+                              </div>
+                            )}
+                          </>
                         )}
                       </td>
 
@@ -607,28 +658,43 @@ export const AdminOrderReliabilityTab: React.FC<AdminOrderReliabilityTabProps> =
                         </div>
                       </td>
 
-                      <td className="p-3.5 text-right space-x-1.5">
-                        {order.status === 'PURCHASE_UNKNOWN' && (
+                      <td className="p-3.5 text-right space-x-1.5 whitespace-nowrap">
+                        {order.status === 'WAITING_SOURCE_BALANCE' && (
                           <button
-                            onClick={() => handleReconcileOrder(order.id)}
-                            className="px-2.5 py-1 rounded bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-slate-950 font-bold text-xs border border-amber-500/40 transition-colors cursor-pointer"
+                            onClick={() => handleAutoFixOrder(order.id)}
+                            className="px-2.5 py-1 rounded bg-rose-500 hover:bg-rose-400 text-white font-bold text-xs shadow-[0_0_12px_rgba(244,63,94,0.4)] inline-flex items-center gap-1 transition-all cursor-pointer"
+                            title="Tự động nạp tiền vào tài khoản nguồn và hoàn tất mua hàng"
                           >
-                            Đối Soát
+                            <Zap className="w-3 h-3 fill-current" />
+                            Fix Lỗi: Nạp Tiền & Mua
                           </button>
                         )}
 
-                        {order.status === 'WAITING_SOURCE_BALANCE' && (
+                        {order.status === 'PURCHASE_UNKNOWN' && (
                           <button
-                            onClick={() => handleConfirmBalance(order.id)}
-                            className="px-2.5 py-1 rounded bg-rose-500/20 hover:bg-rose-500 text-rose-300 hover:text-white font-bold text-xs border border-rose-500/40 transition-colors cursor-pointer"
+                            onClick={() => handleAutoFixOrder(order.id)}
+                            className="px-2.5 py-1 rounded bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-[0_0_12px_rgba(245,158,11,0.4)] inline-flex items-center gap-1 transition-all cursor-pointer"
+                            title="Chạy đối soát khôi phục mã thẻ từ nhà cung cấp"
                           >
-                            Xác Nhận Nạp Tiền
+                            <Zap className="w-3 h-3 fill-current" />
+                            Fix Lỗi: Đối Soát Ngay
+                          </button>
+                        )}
+
+                        {(order.status === 'MANUAL_REVIEW' || order.status === 'PURCHASE_FAILED') && (
+                          <button
+                            onClick={() => handleAutoFixOrder(order.id)}
+                            className="px-2.5 py-1 rounded bg-indigo-500 hover:bg-indigo-400 text-white font-bold text-xs shadow-[0_0_12px_rgba(99,102,241,0.4)] inline-flex items-center gap-1 transition-all cursor-pointer"
+                            title="Tự động khắc phục và mua lại đơn hàng"
+                          >
+                            <Zap className="w-3 h-3 fill-current" />
+                            Fix Lỗi Ngay
                           </button>
                         )}
 
                         <button
                           onClick={() => handleViewEvents(order.id)}
-                          className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-cyan-400 font-semibold text-xs border border-slate-700 transition-colors cursor-pointer"
+                          className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-cyan-400 font-semibold text-xs border border-slate-700 transition-colors cursor-pointer inline-flex items-center gap-1"
                         >
                           Audit Log
                         </button>
